@@ -1,0 +1,226 @@
+package com.cactus.utils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Collectors;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+
+import com.cactus.inits.Config;
+
+public class Util {
+	private static Util instance;
+
+	private Util() {
+	}
+
+	public static Util getInstance() {
+		if (instance == null) {
+			instance = new Util();
+		}
+		return instance;
+	}
+
+	public synchronized String takeScreenshot(WebDriver driver, String pageName) {
+		try {
+			File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+
+			Calendar calendar = Calendar.getInstance();
+			String ssFolderPath = "/" + calendar.get(Calendar.YEAR) + "/"
+					+ (calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())) + "/"
+					+ calendar.get(Calendar.DATE) + "/";
+			String fileName = getRootPath() + "/screenshots/screenshot" + ssFolderPath + System.currentTimeMillis()
+					+ pageName + ".png";
+
+			File file = new File(fileName);
+
+			FileUtils.copyFile(srcFile, file);
+
+			String fileAbsolutePath = file.getAbsolutePath();
+			
+			if (fileAbsolutePath.contains("jenkins")) {
+				return getJenkinsScreenShotPath(fileAbsolutePath);
+			}
+
+			return fileAbsolutePath;
+		} catch (Exception e) {
+			// Reporter.log("Exception in taking screenshot");
+		}
+		return null;
+	}
+
+	public synchronized String takeScreenshot(WebDriver driver) {
+		try {
+			File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+			Calendar calendar = Calendar.getInstance();
+			String ssFolderPath = "/" + calendar.get(Calendar.YEAR) + "/"
+					+ (calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())) + "/"
+					+ calendar.get(Calendar.DATE) + "/";
+			String fileName = getRootPath() + "/screenshots/screenshot" + ssFolderPath + System.currentTimeMillis()
+					+ ".png";
+
+			File file = new File(fileName);
+
+			FileUtils.copyFile(srcFile, file);
+
+			String fileAbsolutePath = file.getAbsolutePath();
+			
+			if (fileAbsolutePath.contains("jenkins")) {
+				return getJenkinsScreenShotPath(fileAbsolutePath);
+			}
+			
+			return fileAbsolutePath;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	public String getJenkinsScreenShotPath(String completePath) {
+		String ip = "http://" + Config.ip + ":8080/job/";
+		String workspace = getJenkinsWorkSpaceName(completePath);
+		String path=completePath.split("screenshots")[1];
+		return ip + workspace + "/ws/screenshots/" +path;
+	}
+
+	public String getFileName(String completePath) {
+		return completePath.substring(completePath.lastIndexOf(File.separator) + 1, completePath.length());
+	}
+
+	public String getJenkinsWorkSpaceName(String completePath) {
+		int len = "workspace".length();
+		String strPath = completePath.substring(completePath.lastIndexOf("workspace") + len + 1, completePath.length());
+
+		return strPath.substring(0, strPath.indexOf(File.separator));
+
+	}
+
+	public String getResourcePath() {
+		return "/src/main/resources/";
+	}
+
+	public String getFilePath(String fileName) {
+		String rootPath = getRootPath();
+		String fileDir = rootPath + getResourcePath() + fileName;
+
+		return fileDir;
+
+	}
+
+	public String getOS() {
+		return System.getProperty("os.name");
+	}
+
+	public String getRootPath() {
+		return System.getProperty("user.dir");
+	}
+
+	public String getNewEmailId() {
+		return "test" + RandomStringUtils.randomAlphanumeric(8).toLowerCase() + "@mailinator.com";
+	}
+
+	public long getCurrentTimeStamp() {
+		return System.currentTimeMillis();
+
+	}
+
+	public String getNewEmailIdWithTimeStamp() {
+		return "test" + getCurrentTimeStamp() + "@mailinator.com";
+	}
+
+	public String getRandomStringValueUpto5Chars() {
+		return RandomStringUtils.randomAlphabetic(5).toUpperCase();
+	}
+
+	public String getResourceName(String value) {
+		String[] str = value.split("/");
+		return str[0].toString();
+	}
+
+	public String getResourceId(String value) {
+		String[] str = value.split("/");
+		return str[1].toString();
+	}
+
+	public String getMachineIp() {
+		InetAddress IP = null;
+		try {
+			IP = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		String ip = IP.getHostAddress();
+		System.out.println("IP of my system is := " + ip);
+		return ip;
+	}
+
+	public String getFileAbolutePath(String fileName) {
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource(fileName).getFile());
+		return file.getAbsolutePath();
+	}
+
+	public Map<String, String> getValuesFromConfigInMap(String fileName) {
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource(fileName).getFile());
+
+		FileInputStream fileInput = null;
+		try {
+			fileInput = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		Properties prop = new Properties();
+		Map<String, String> map = new HashMap<String, String>();
+		try {
+			prop.load(fileInput);
+			map.putAll(prop.entrySet().stream()
+					.collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString())));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return map;
+	}
+
+	public String getTestURL(String testType, String market, Map<String, String> config) {
+		String marketURL = config.get(market.toUpperCase());
+
+		if (testType.toLowerCase().contains("crm")) {
+			marketURL = config.get(testType.toUpperCase());
+		}
+
+		String testEnv = config.get("TestEnvironment").toLowerCase();
+		String testURL = "";
+		if (testEnv.contains("test")) {
+			testURL = testEnv + "." + marketURL;
+		} else if (testEnv.toLowerCase().contains("live")) {
+			testURL = marketURL;
+		}
+		if (testType.toLowerCase().contains("ncf")) {
+			testURL = testURL + "/" + config.get("NCFURL");
+		}
+		if (testType.toLowerCase().contains("servicefeedback")) {
+			testURL = testURL.replace("404", config.get("EOSServiceFeedback")) + "/" ;
+		}
+		return "https://" + testURL;
+
+	}
+
+}

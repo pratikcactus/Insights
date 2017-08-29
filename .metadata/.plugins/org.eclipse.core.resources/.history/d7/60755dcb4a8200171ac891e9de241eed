@@ -1,0 +1,249 @@
+package com.cactus.whiteboard.tests;
+
+import java.util.Map;
+
+import org.testng.annotations.Test;
+
+import com.cactus.crm.actions.AllocateJobActions;
+import com.cactus.crm.actions.ConfirmJobActions;
+import com.cactus.crm.actions.JobActions;
+import com.cactus.crm.pages.EnquiryAndJobViewPage;
+import com.cactus.utils.DataMapUtil;
+import com.cactus.utils.DataProviderClass;
+import com.cactus.utils.HipChatUtil;
+import com.relevantcodes.extentreports.LogStatus;
+
+public class CompleteJobFlowTestTemp extends BaseTest {
+
+	@Test(alwaysRun = true, dataProvider = "customClientData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClient(Map<String, String> testData) {
+		String testURL = util.getTestURL("CRMJOBVIEW", "ENG", configMap);
+
+		String testURLCRMJobView = util.getTestURL("CRMJobView", "ENG", configMap);
+		testData.put("testURLCRMJobView", testURLCRMJobView);
+
+		testData.put("testURL", testURL);
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		EnquiryAndJobViewPage jobViewPage = new ConfirmJobActions(driver, test, wait).createJobForUser(testData);
+		jobViewPage.logout();
+		if (getHipChatNotificationsFlag()) {
+			new HipChatUtil().javaCurlSendHipchat(getJobMessage(testData));
+		}
+		new AllocateJobActions(driver, test, wait).allocateJobFromPM(testData);
+		jobViewPage.logout();
+		if (getHipChatNotificationsFlag()) {
+			new HipChatUtil().javaCurlSendHipchat(getJobMessage(testData));
+		}
+
+		Map<String, String> testDataFL = new DataMapUtil().getFLMap(testData);
+		testDataFL.put("crmLogoutURL", util.getTestURL("CRMLOGOUT", "ENG", configMap));
+		testDataFL.put("testURL", util.getTestURL("CRM", "ENG", configMap));
+		testDataFL.put("testURLCRMJobView", testURLCRMJobView);
+		new JobActions(driver, test, wait).acceptJob(testDataFL);
+		if (getHipChatNotificationsFlag()) {
+			new HipChatUtil().javaCurlSendHipchat(getJobMessage(testData));
+		}
+		executor.navigateToURL(testDataFL.get("testURL"));
+		new JobActions(driver, test, wait).markJobComplete(testDataFL);
+
+		if (testData.get("JobToBeDeliveredBy").equalsIgnoreCase("CM")) {
+			executor.navigateToURL(testDataFL.get("testURL"));
+			new JobActions(driver, test, wait).sendToClientFromCM(testData);
+		}
+
+		if (getHipChatNotificationsFlag()) {
+			new HipChatUtil().javaCurlSendHipchat(getJobMessage(testData));
+		}
+
+	}
+
+	@Test(alwaysRun = true, dataProvider = "enquiryDataAll", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientData(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "uploadedClientData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientUploadedData(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "customClientData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientCustomData(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "newEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientNewUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "existingEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientExistingUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "jpnEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientJPNUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "twnEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientTWNUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "crpenEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientCRPENUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "crpjpEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientCRPJPUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "korEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientKORUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "brzEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientBRZUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "kinoEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientKINOUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "kupEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientKUPUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "chnEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientCHNUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "engEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientENGUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "enginEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientENGINUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "gerEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientGERUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "osaEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientOSAUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "indEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientINDUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "brlEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientBRLUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "wkhEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientWKHUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "hdwEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientHDWUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "nmoEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientNMOUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	public String getJobMessage(Map<String, String> testData) {
+		return "Job :" + testData.get("JobCode") + ",Env:" + testData.get("testEnv") + ",status:"
+				+ testData.get("status");
+	}
+}

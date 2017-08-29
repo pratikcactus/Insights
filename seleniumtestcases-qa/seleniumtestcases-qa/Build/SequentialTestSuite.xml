@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Suite" parallel="false">
+
+	<parameter name="DataSet" value="DEFAULT" />
+	<test name="AddEnquiryTestDEFAULTJPN" group-by-instances="true">
+		<parameter name="Market" value="JPN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="AddEnquiryTestDEFAULTTWN" group-by-instances="true">
+		<parameter name="Market" value="TWN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="AddEnquiryTestDEFAULTCRPEN" group-by-instances="true">
+		<parameter name="Market" value="CRPEN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="AddEnquiryTestDEFAULTCRPJP" group-by-instances="true">
+		<parameter name="Market" value="CRPJP" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="AddEnquiryTestDEFAULTKOR" group-by-instances="true">
+		<parameter name="Market" value="KOR" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="AddEnquiryTestCUSTOM" group-by-instances="true">
+	<parameter name="DataSet" value="CUSTOM" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="AddEnquiryTestUPLOAD" group-by-instances="true">
+		<parameter name="DataSet" value="UPLOAD" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="CompleteFlowTestDEFAULTJPN" group-by-instances="true">
+		<parameter name="Market" value="JPN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.CompleteJobFlowTest">
+				<methods>
+					<include name="createJobAllocateAcceptAndSendToClientUser" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+	<test name="CompleteFlowTestDEFAULTTWN" group-by-instances="true">
+		<parameter name="Market" value="TWN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.CompleteJobFlowTest">
+				<methods>
+					<include name="createJobAllocateAcceptAndSendToClientUser" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+	<test name="CompleteFlowTestDEFAULTCRPEN" group-by-instances="true">
+		<parameter name="Market" value="CRPEN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.CompleteJobFlowTest">
+				<methods>
+					<include name="createJobAllocateAcceptAndSendToClientUser" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+	<test name="CompleteFlowTestDEFAULTCRPJP" group-by-instances="true">
+		<parameter name="Market" value="CRPJP" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.CompleteJobFlowTest">
+				<methods>
+					<include name="createJobAllocateAcceptAndSendToClientUser" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+	<test name="CompleteFlowTestDEFAULTKOR" group-by-instances="true">
+		<parameter name="Market" value="KOR" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.CompleteJobFlowTest">
+				<methods>
+					<include name="createJobAllocateAcceptAndSendToClientUser" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="CompleteFlowTestCUSTOM" group-by-instances="true">
+		<parameter name="DataSet" value="CUSTOM" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.CompleteJobFlowTest">
+				<methods>
+					<include name="createJobAllocateAcceptAndSendToClientUser" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="CompleteFlowTestUPLOAD" group-by-instances="true">
+		<parameter name="DataSet" value="UPLOAD" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.CompleteJobFlowTest">
+				<methods>
+					<include name="createJobAllocateAcceptAndSendToClientUser" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="EOSAPPFeedbackTestEXISTINGJOBID" group-by-instances="true">
+		<classes>
+			<class name="com.cactus.eosapp.tests.FeedbackTest">
+				<methods>
+					<include name="feedbackTest" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="EOSAPPFeedbackTestCREATEJOBID" group-by-instances="true">
+		<classes>
+			<class name="com.cactus.whiteboard.tests.CompleteJobFlowTest">
+				<methods>
+					<include name="createSTCJobAndGiveFeedback" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="EOSAPPFeedbackTestUPLOADCREATEJOBID" group-by-instances="true">
+		<classes>
+			<class name="com.cactus.whiteboard.tests.CompleteJobFlowTest">
+				<methods>
+					<include name="createSTCJobAndGiveFeedbackUpload" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="EOSAPPFeedbackTestUPLOADEXISTINGJOBID" group-by-instances="true">
+		<classes>
+			<class name="com.cactus.eosapp.tests.FeedbackTest">
+				<methods>
+					<include name="feedbackUploadTest" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+</suite> <!-- Suite -->

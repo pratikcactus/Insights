@@ -1,0 +1,148 @@
+package com.cactus.insights.pages;
+
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.cactus.executor.Executioner;
+import com.cactus.inits.Config;
+import com.cactus.utils.Util;
+import com.relevantcodes.extentreports.ExtentTest;
+
+public class SearchPage {
+	private final WebDriver driver;
+	private WebDriverWait wait;
+	private Executioner executor;
+	private ExtentTest test;
+	private Util util;
+	private LoginPage loginPage;
+
+	// Search Box
+	@FindBy(id = "edit-apachesolr-panels-search-form")
+	public WebElement searchBox;
+
+	// Search Icon
+	@FindBy(id = "edit-submit")
+	public WebElement searchIcon;
+
+	// Filter By Format Article
+	@FindBy(xpath = "//a[contains(@href,'3Aarticle')]")
+	public WebElement articleFilter;
+
+	// Filter By Format Q&A Forum
+	@FindBy(xpath = "//a[contains(@href,'3Aq_and_a')]")
+	public WebElement QAFilter;
+
+	// Filter By Format Research
+	@FindBy(xpath = "//a[contains(@href,'3Aresearch')]")
+	public WebElement researchFilter;
+
+	// Filter By Format Interview
+	@FindBy(xpath = "//a[contains(@href,'3Aexperts')]")
+	public WebElement interviewFilter;
+
+	// Filter By Format Video
+	@FindBy(xpath = "//a[contains(@href,'3Avideo')]")
+	public WebElement videoFilter;
+
+	// Filter By Format Event
+	@FindBy(xpath = "//a[contains(@href,'3Aevents')]")
+	public WebElement eventFilter;
+
+	// Filter By Format Slideshare
+	@FindBy(xpath = "//a[contains(@href,'3Aslideshare')]")
+	public WebElement slideshareFilter;
+
+	// Filter By Format Interactive
+	@FindBy(xpath = "//a[contains(@href,'3Acomic_strip')]")
+	public WebElement interactiveFilter;
+
+	// Filter By Date 2013
+	@FindBy(xpath = "//a[contains(@href,'5B2013-01')]")
+	public WebElement date2013;
+
+	// Filter By Date 2014
+	@FindBy(xpath = "//a[contains(@href,'5B2014-01')]")
+	public WebElement date2014;
+
+	// Filter By Date 2015
+	@FindBy(xpath = "//a[contains(@href,'5B2015-01')]")
+	public WebElement date2015;
+
+	// Filter By Date 2016
+	@FindBy(xpath = "//a[contains(@href,'5B2016-01')]")
+	public WebElement date2016;
+
+	// Filter By Date 2017
+	@FindBy(xpath = "//a[contains(@href,'5B2017-01')]")
+	public WebElement date2017;
+
+	// Search Result 1st result
+	@FindBy(xpath = "//section[@class='search-results']/article[1]//h3//a")
+	public WebElement firstSearchResults;
+
+	// Main title Search Result Detail page
+	@FindBy(xpath = "//h1[@class='field-content']")
+	public WebElement titleDetailPage;
+
+	// Ask the community link on Search page
+	@FindBy(xpath = "//div[@class='q-a-link_SRP']/a")
+	public WebElement askCommunityLink;
+
+	// Ask the Community Page heading
+	@FindBy(xpath = "//h1")
+	public WebElement askCommunityHeading;
+
+	// No Search Results Title
+	@FindBy(xpath = "//div[@class='panel-pane pane-apachesolr-result']//h2")
+	public WebElement noResultTitle;
+
+	// Search Results Title
+	@FindBy(xpath = "//div[@class='panel-pane pane-apachesolr-result']/div[1]/h2[1]")
+	public WebElement searchResultTitle;
+
+	// Search Page Conditions
+	public SearchPage(WebDriver driver, ExtentTest test, WebDriverWait wait) {
+		// super(driver, wait);
+		this.driver = driver;
+		this.wait = wait;
+		this.test = test;
+		executor = new Executioner(driver, test, wait);
+		util = Util.getInstance();
+		PageFactory.initElements(driver, this);
+		executor.softWaitforVisibilityOfWebElement(searchIcon, "Wait until Search button is displayed");
+		executor.click(searchIcon, "Search button is clicked");
+		executor.softWaitforVisibilityOfWebElement(QAFilter, "Wait for the filter to get displayed");
+		if (!driver.getTitle().trim().toLowerCase().contains(Config.ROW_TEST_SITE_Search_Result.toLowerCase())) {
+			throw new IllegalStateException("This is not  the  Staging  site Page");
+		}
+	}
+
+	public void searchIconClick(String input) {
+		executor.type(searchBox, input, "Text entered to search");
+		executor.click(searchIcon, "Search ICon clicked to search");
+		executor.softWaitforVisibilityOfWebElement(QAFilter, "Wait for the filter to get displayed");
+	}
+
+	public void validSearchData() {
+		boolean flag1 = false;
+		List<WebElement> noOfColumns;
+		noOfColumns = driver.findElements(By.xpath("//p[@class='search-result__snippet']/strong"));
+
+		// Loop will rotate till expected title is found.
+		for (WebElement cell : noOfColumns) {
+			// set flag when title is found
+			if (cell.getText().contains("question")) {
+				flag1 = true;
+			} else {
+				break;
+			}
+		}
+	}
+
+}

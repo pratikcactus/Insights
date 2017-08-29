@@ -1,0 +1,23 @@
+package com.cactus.whiteboard.tests;
+
+import org.testng.annotations.BeforeMethod;
+
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
+
+import com.cactus.inits.Config;
+import com.cactus.inits.InitTest;
+
+public class BaseTest extends InitTest {
+
+	//private boolean databaseFlag = true;
+	//private boolean hipChatNotificationFlag=true;
+	
+	@Parameters({ "testType", "market" })
+	@BeforeMethod
+	public void setupWhiteBoard(@Optional("CRM") String testType, @Optional("ENG") String market){
+		testURL = Config.insightURL;			
+		executor.navigateToURL(testURL);
+	}
+	
+}

@@ -1,0 +1,158 @@
+package com.cactus.insights.pages;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.cactus.executor.Executioner;
+import com.cactus.inits.Config;
+import com.cactus.utils.Util;
+import com.relevantcodes.extentreports.ExtentTest;
+
+public class RegisterPage {// extends AbstractPage
+	private final WebDriver driver;
+	private WebDriverWait wait;
+	private Executioner executor;
+	private ExtentTest test;
+	private Util util;
+	private LoginPage loginPage;
+
+	// Register button
+	@FindBy(xpath = "//div[@class='anonymous-register anonymous-text']")
+	public WebElement registerButton;
+
+	// Register form
+	@FindBy(id = "formm-bg")
+	public WebElement registrationForm;
+
+	// First Name
+	@FindBy(id = "txtfirstname")
+	public WebElement firstName;
+
+	// Last name
+	@FindBy(id = "txtlastname")
+	public WebElement lastName;
+
+	// Email Address
+	@FindBy(id = "txtemail")
+	public WebElement emailAddressRegister;
+
+	// Password
+	@FindBy(id = "txtpwd")
+	public WebElement passwordRegister;
+
+	// Confirm Password
+	@FindBy(id = "txtcnfpwd")
+	public WebElement confirmPassword;
+
+	// Univeristy Name
+	@FindBy(id = "txtorg")
+	public WebElement universityName;
+
+	// Job Title Select Id
+	@FindBy(id = "drpjdesc")
+	public WebElement jobTitleId;
+
+	// Captcha Text
+	@FindBy(xpath = "//span[@class='captchaText']")
+	public WebElement captchaText;
+
+	// Register for free button
+	@FindBy(id = "crsubmit")
+	public WebElement registerFreeButton;
+
+	// Register Page/ HomePage Conditions
+	public RegisterPage(WebDriver driver, ExtentTest test, WebDriverWait wait) {
+		// super(driver, wait);
+		this.driver = driver;
+		this.wait = wait;
+		this.test = test;
+		executor = new Executioner(driver, test, wait);
+		util = Util.getInstance();
+		loginPage = new LoginPage(driver, test, wait);
+
+		PageFactory.initElements(driver, this);
+		executor.softWaitforVisibilityOfWebElement(loginPage.bannerpopup, "Wait until banner is displayed");
+		if (executor.isElementDisplayed(loginPage.bannerpopup, "banner pop-up") == true) {
+			executor.click(loginPage.bannerpopup, "No Thanks button for banner pop-up clicked");
+		} else {
+
+			executor.softWaitforVisibilityOfWebElement(registerButton, "Wait until Registration button is displayed");
+
+			if (!driver.getTitle().trim().toLowerCase().contains(Config.ROW_TEST_SITE.toLowerCase())) {
+				throw new IllegalStateException("This is not  the  Staging  site Page");
+			}
+		}
+	}
+	
+	public void goToRegistration(){
+		executor.click(registerButton, "Registration Button is clicked");
+	}
+	
+	public void userRegistration(){
+		DateFormat dateFormat = new SimpleDateFormat("MMddHHmmss");
+		// get current date time with Date()
+		Date date = new Date();
+		String first_name = "testuser";
+		String last_name = "editage";
+		String emailid = "a" +dateFormat.format(date)+"@mailinator.com";
+		driver.switchTo().frame("insights-widget");
+		executor.softWaitforVisibilityOfWebElement(registrationForm, "Wait for Registration Form");
+		executor.type(firstName, first_name, "Firstname entered in registration field");
+		executor.type(lastName, last_name, "Lastname entered in registration field");
+		executor.type(emailAddressRegister, emailid, "Emailid entered in registration field");
+		executor.type(passwordRegister, "test", "Firstname entered in registration field");
+		executor.type(confirmPassword, "test", "Firstname entered in registration field");
+		executor.selectFromDropDown(jobTitleId, "0", "Part-time researcher");
+		executor.type(universityName, "testuniversity", "Firstname entered in registration field");
+		
+		
+	}
+	
+	public void selectCaptcha(){
+		List<WebElement> choice = driver.findElements(By.xpath("//div[@class='captchaImages']/img"));
+		for (WebElement e : choice) {
+			if (e.getAttribute("src").contains("01.png") && captchaText.getText().contains("House")) {
+				executor.click(e, "Captcha House icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("02.png") && captchaText.getText().contains("Key")) {
+				executor.click(e, "Captcha Key icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("03.png") && captchaText.getText().contains("Flag")) {
+				executor.click(e, "Captcha Flag icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("04.png") && captchaText.getText().contains("Clock")) {
+				executor.click(e, "Captcha Clock icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("05.png") && captchaText.getText().contains("Bug")) {
+				executor.click(e, "Captcha Bug icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("06.png") && captchaText.getText().contains("Pen")) {
+				executor.click(e, "Captcha Pen icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("07.png") && captchaText.getText().contains("Light")) {
+				executor.click(e, "Captcha Light icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("08.png") && captchaText.getText().contains("Musical")) {
+				executor.click(e, "Captcha Musical icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("09.png") && captchaText.getText().contains("Heart")) {
+				executor.click(e, "Captcha Heart icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("10.png") && captchaText.getText().contains("World")) {
+				executor.click(e, "Captcha World icon is selected");
+				break;
+			}
+		}
+	}
+
+}

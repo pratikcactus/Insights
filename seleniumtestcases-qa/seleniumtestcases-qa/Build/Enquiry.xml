@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Suite">
+
+	<parameter name="DataSet" value="DEFAULT" />
+	<test name="AddEnquiryTestJpn" group-by-instances="true">
+		<parameter name="Market" value="JPN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+	<test name="AddEnquiryTestTwn" group-by-instances="true">
+		<parameter name="Market" value="TWN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<parameter name="browser" value="firefox" />
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="AddEnquiryTestCrpen" group-by-instances="true">
+		<parameter name="Market" value="CRPEN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="AddEnquiryTestCrpjp" group-by-instances="true">
+		<parameter name="Market" value="CRPJP" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="AddEnquiryTestKor" group-by-instances="true">
+		<parameter name="Market" value="KOR" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+</suite> <!-- Suite -->

@@ -1,0 +1,253 @@
+package com.cactus.insights.pages;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.cactus.executor.Executioner;
+import com.cactus.utils.Util;
+import com.relevantcodes.extentreports.ExtentTest;
+
+public class RegisterPage {// extends AbstractPage
+	private final WebDriver driver;
+	private WebDriverWait wait;
+	private Executioner executor;
+	private ExtentTest test;
+	private Util util;
+	private LoginPage loginPage;
+
+	// Register button
+	@FindBy(xpath = "//div[@class='anonymous-register anonymous-text']/a")
+	public WebElement registerButton;
+
+	// Register form
+	@FindBy(id = "formm-bg")
+	public WebElement registrationForm;
+
+	// First Name
+	@FindBy(id = "txtfirstname")
+	public WebElement firstName;
+
+	// Last name
+	@FindBy(id = "txtlastname")
+	public WebElement lastName;
+
+	// Email Address
+	@FindBy(id = "txtemail")
+	public WebElement emailAddressRegister;
+
+	// Password
+	@FindBy(id = "txtpwd")
+	public WebElement passwordRegister;
+
+	// Confirm Password
+	@FindBy(id = "txtcnfpwd")
+	public WebElement confirmPassword;
+
+	// Univeristy Name
+	@FindBy(id = "txtorg")
+	public WebElement universityName;
+
+	// Job Title Select Id
+	@FindBy(id = "drpjdesc")
+	public WebElement jobTitleId;
+
+	// Registration wait
+	@FindBy(id = "modalOverlay")
+	public WebElement registrationWait;
+
+	// Recent Article Title
+	@FindBy(xpath = "//a[contains(@href,'recent-article')]")
+	public WebElement recentArticleTitle;
+
+	// Captcha Text
+	@FindBy(xpath = "//span[@class='captchaText']")
+	public WebElement captchaText;
+
+	// Register for free button
+	@FindBy(id = "crsubmit")
+	public WebElement registerFreeButton;
+
+	// Register Captcha Wait
+	@FindBy(xpath = "//div[@class='captchaImages']/img[@class='captchaImage simpleCaptchaSelected']")
+	public WebElement registerCaptchaWait;
+
+	// Register section click
+	@FindBy(xpath = "//div[@class='display-dr-eddy']")
+	public WebElement registerSection;
+
+	// First Name Error
+	@FindBy(id = "fnameerror")
+	public WebElement firstNameError;
+
+	// Last Name Error
+	@FindBy(id = "lnameerror")
+	public WebElement lastNameError;
+
+	// Email Address Error
+	@FindBy(id = "enameerror")
+	public WebElement emailAddressError;
+
+	// Password Error
+	@FindBy(id = "pwderror")
+	public WebElement passwordErrorMessage;
+
+	// Confirm Password Error
+	@FindBy(id = "cnfpwderror")
+	public WebElement confirmPasswordError;
+
+	// Job Title Error
+	@FindBy(id = "jdescerror")
+	public WebElement jobtitleError;
+
+	// University/Institute/Company Error
+	@FindBy(id = "orgerror")
+	public WebElement univErrorMsg;
+
+	// Captcha error
+	@FindBy(id = "captchaerror")
+	public WebElement captchaErrorMsg;
+
+	// Register Page/ HomePage Conditions
+	public RegisterPage(WebDriver driver, ExtentTest test, WebDriverWait wait) {
+		// super(driver, wait);
+		this.driver = driver;
+		this.wait = wait;
+		this.test = test;
+		executor = new Executioner(driver, test, wait);
+		util = Util.getInstance();
+		PageFactory.initElements(driver, this);
+	}
+
+	public void registerSectionClick() {
+		executor.softWaitforVisibilityOfWebElement(registerSection, "Waiting for Registration Section to appear");
+		executor.moveToElement(registerSection);
+		executor.actionClick(registerSection, "Register Section is clicked");
+		executor.softWaitforVisibilityOfWebElement(
+				By.xpath("//div[@class='panels-ajax-tab-panel panels-ajax-tab-panel-dr-eddy-form-registeration']"),
+				"Waiting for Registration Form to appear");
+	}
+
+	public void goToRegistration() {
+		executor.softWaitforElementToBeClickable(registerButton, "Wait for Registration button");
+		executor.actionClick(registerButton, "Registration Button is clicked");
+	}
+
+	public void userRegistration() {
+		DateFormat dateFormat = new SimpleDateFormat("MMddHHmmss");
+		// get current date time with Date()
+		Date date = new Date();
+		String first_name = "testuser";
+		String last_name = "editage";
+		String emailid = "a" + dateFormat.format(date) + "@mailinator.com";
+		String password = "test";
+		driver.switchTo().frame("insights-widget");
+		executor.softWaitforVisibilityOfWebElement(registrationForm, "Wait for Registration Form");
+		executor.type(firstName, first_name, "Firstname entered in registration field");
+		executor.type(lastName, last_name, "Lastname entered in registration field");
+		executor.type(emailAddressRegister, emailid, "Emailid entered in registration field");
+		executor.type(passwordRegister, password, "New Password entered in registration field");
+		executor.type(confirmPassword, password, "ConfirmPassword entered in registration field");
+		executor.selectFromDropDown(jobTitleId, "0", "Part-time researcher");
+		executor.type(universityName, "testuniversity", "University Name entered in registration field");
+		executor.softWaitforVisibilityOfWebElement(By.xpath("//div[@class='captchaImages']"),
+				"Wait for captcha to load");
+		selectCaptcha();
+		executor.clickJS(registerFreeButton, "Registration Button clicked");
+		executor.softWaitforInvisibilityOFWebElement(registrationWait, "Waiting for Registration Confirmation");
+		executor.softWaitforInvisibilityOFWebElement(By.xpath("//div[@class='scLoader']"),
+				"Waiting for Registration Loader to disappear");
+		driver.switchTo().defaultContent();
+		loginPage = new LoginPage(driver, test, wait);
+		executor.softWaitforVisibilityOfWebElement(loginPage.username, "Wait for the username to be displayed");
+		loginPage.logoutClick();
+		loginPage.login(emailid, password, password);
+	}
+
+	public void selectCaptcha() {
+		List<WebElement> choice = driver.findElements(By.xpath("//div[@class='captchaImages']/img"));
+		for (WebElement e : choice) {
+			if (e.getAttribute("src").contains("01.png") && captchaText.getText().contains("House")) {
+				executor.clickJS(e, "Captcha House icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("02.png") && captchaText.getText().contains("Key")) {
+				executor.clickJS(e, "Captcha Key icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("03.png") && captchaText.getText().contains("Flag")) {
+				executor.clickJS(e, "Captcha Flag icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("04.png") && captchaText.getText().contains("Clock")) {
+				executor.clickJS(e, "Captcha Clock icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("05.png") && captchaText.getText().contains("Bug")) {
+				executor.clickJS(e, "Captcha Bug icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("06.png") && captchaText.getText().contains("Pen")) {
+				executor.clickJS(e, "Captcha Pen icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("07.png") && captchaText.getText().contains("Light")) {
+				executor.clickJS(e, "Captcha Light icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("08.png") && captchaText.getText().contains("Musical")) {
+				executor.clickJS(e, "Captcha Musical icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("09.png") && captchaText.getText().contains("Heart")) {
+				executor.clickJS(e, "Captcha Heart icon is selected");
+				break;
+			} else if (e.getAttribute("src").contains("10.png") && captchaText.getText().contains("World")) {
+				executor.clickJS(e, "Captcha World icon is selected");
+				break;
+			}
+		}
+		executor.softWaitforVisibilityOfWebElement(registerCaptchaWait, "Waitng for Captcha to be selected");
+	}
+	
+	public void registerErrorMessages() {
+		driver.switchTo().frame("insights-widget");
+		executor.clickJS(registerFreeButton, "Registration Button clicked");
+		boolean flag1 = false, flag2 = false, flag3 = false, flag4 = false, flag5 = false, flag6 = false, flag7 = false,
+				flag8 = false;
+		// Verify all the Error Messages
+		if (firstNameError.getText().contains("Re-enter your name")) {
+			flag1 = true;
+		}
+		else if (lastNameError.getText().contains("Re-enter your last name")) {
+			flag2 = true;
+		}
+		else if (emailAddressError.getText().contains("Enter your email address")) {
+			flag3 = true;
+			executor.type(emailAddressRegister, "asd", "Emailid entered in registration field");
+		}
+		else if (passwordErrorMessage.getText().contains("Set your account password")) {
+			flag4 = true;
+		}
+		else if (confirmPasswordError.getText().contains("Please enter your password again for confirmation")) {
+			flag5 = true;
+		}
+		else if (jobtitleError.getText().contains("Select a job description from the dropdown list")) {
+			flag6 = true;
+		}
+		else if (univErrorMsg.getText().contains("Enter the name of the organization")) {
+			flag7 = true;
+		}
+		else if (captchaErrorMsg.getText().contains("Please select a captcha")) {
+			flag8 = true;
+		}
+		// Verify the Final condition
+		if (flag1 && flag2 && flag3 && flag4 && flag5 && flag6 && flag7 && flag8) {
+			assertTrue(true, "Registration Error Messages are shown");
+		} else {
+			assertTrue(false, "Registration Error Messages are nto shown");
+		}
+
+	}
+
+}

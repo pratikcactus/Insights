@@ -1,0 +1,114 @@
+package com.cactus.whiteboard.tests;
+
+import java.util.Map;
+
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import com.cactus.crm.actions.AllocateJobActions;
+import com.cactus.crm.actions.ConfirmJobActions;
+import com.cactus.crm.pages.EnquiryAndJobViewPage;
+import com.cactus.utils.ExcelUtil;
+
+public class CreateJobTest extends BaseTest {
+	
+	@Test(dataProvider = "customEnquiryData", groups = { "regression" })
+	public void createJobForUserCustomData(Map<String, String> testData) {
+		String testURL = util.getTestURL("CRMJOBVIEW", "ENG", configMap);
+		testData.put("testURL", testURL);
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		EnquiryAndJobViewPage jobViewPage=new ConfirmJobActions(driver, test, wait).createJobForUser(testData);
+		jobViewPage.logout();
+		new AllocateJobActions(driver, test, wait).allocateJobFromPM(testData);
+		jobViewPage.logout();
+	}
+
+	@Test(dataProvider = "jpnEnquiryData", groups = { "regression" })
+	public void createJobJPNewAndExistingUser(Map<String, String> testData) {
+		String testURL = util.getTestURL("CRMJOBVIEW", "ENG", configMap);
+		testData.put("testURL", testURL);
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		EnquiryAndJobViewPage jobViewPage=new ConfirmJobActions(driver, test, wait).createJobForUser(testData);
+		jobViewPage.logout();
+		new AllocateJobActions(driver, test, wait).allocateJobFromPM(testData);
+		jobViewPage.logout();
+	}
+	
+
+	@Test(dataProvider = "twnEnquiryData", groups = { "regression" })
+	public void createJobTwnNewAndExistingUser(Map<String, String> testData) {
+		String testURL = util.getTestURL("CRMJOBVIEW", "ENG", configMap);
+		testData.put("testURL", testURL);
+		EnquiryAndJobViewPage jobViewPage=new ConfirmJobActions(driver, test, wait).createJobForUser(testData);
+		jobViewPage.logout();
+		new AllocateJobActions(driver, test, wait).allocateJobFromPM(testData);
+	}
+	
+	@Test(dataProvider = "crpenEnquiryData", groups = { "regression" })
+	public void createJobCrpenNewAndExistingUser(Map<String, String> testData) {
+
+		String testURL = util.getTestURL("CRMJOBVIEW", "ENG", configMap);
+		testData.put("testURL", testURL);
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		EnquiryAndJobViewPage jobViewPage=new ConfirmJobActions(driver, test, wait).createJobForUser(testData);
+		jobViewPage.logout();
+		new AllocateJobActions(driver, test, wait).allocateJobFromPM(testData);
+	}
+	
+	@Test(dataProvider = "crpjpEnquiryData", groups = { "regression" })
+	public void createJobCrpjpNewAndExistingUser(Map<String, String> testData) {
+		String testURL = util.getTestURL("CRMJOBVIEW", "ENG", configMap);
+		testData.put("testURL", testURL);
+		EnquiryAndJobViewPage jobViewPage=new ConfirmJobActions(driver, test, wait).createJobForUser(testData);
+		jobViewPage.logout();
+		new AllocateJobActions(driver, test, wait).allocateJobFromPM(testData);
+	}
+	
+	@Test(dataProvider = "korEnquiryData", groups = { "regression" })
+	public void createJobKorNewAndExistingUser(Map<String, String> testData) {
+		String testURL = util.getTestURL("CRMJOBVIEW", "ENG", configMap);
+		testData.put("testURL", testURL);
+		EnquiryAndJobViewPage jobViewPage=new ConfirmJobActions(driver, test, wait).createJobForUser(testData);
+		jobViewPage.logout();
+		new AllocateJobActions(driver, test, wait).allocateJobFromPM(testData);
+	}
+	
+	
+	@Test(dataProvider = "whiteBoardNewClientData", groups = { "regression" })
+	public void createJobExistingUser(Map<String, String> testData) {
+		String testURL = util.getTestURL("CRMJobView", "ENG", configMap);
+		testData.put("testURL", testURL);
+		EnquiryAndJobViewPage jobViewPage=new ConfirmJobActions(driver, test, wait).createJobExistingUser(testData);
+		jobViewPage.logout();
+	}
+	
+	@DataProvider
+	public Object[][] customEnquiryData() {
+		return new ExcelUtil().getUserDataFromExcel("testData_CRM.xlsx", "custom");
+	}
+
+	@DataProvider
+	public Object[][] jpnEnquiryData() {
+		return new ExcelUtil().getUserDataFromExcel("testData_CRM.xlsx", "JPN");
+	}
+	
+	@DataProvider
+	public Object[][] twnEnquiryData() {
+		return new ExcelUtil().getUserDataFromExcel("testData_CRM.xlsx", "TWN");
+	}
+	
+	@DataProvider
+	public Object[][] crpenEnquiryData() {
+		return new ExcelUtil().getUserDataFromExcel("testData_CRM.xlsx", "CRPEN");
+	}
+
+	@DataProvider
+	public Object[][] crpjpEnquiryData() {
+		return new ExcelUtil().getUserDataFromExcel("testData_CRM.xlsx", "CRPJP");
+	}
+
+	@DataProvider
+	public Object[][] korEnquiryData() {
+		return new ExcelUtil().getUserDataFromExcel("testData_CRM.xlsx", "KOR");
+	}
+}

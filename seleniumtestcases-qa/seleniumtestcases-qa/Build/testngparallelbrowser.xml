@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Suite" parallel="tests">
+	<test name="AddEnquiryTestJPN" group-by-instances="true">
+		<parameter name="Market" value="JPN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<parameter name="browser" value="firefox" />
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="AddEnquiryTestTWN" group-by-instances="true">
+		<parameter name="Market" value="TWN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<parameter name="browser" value="chrome" />
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="AddEnquiryTestCRPEN" group-by-instances="true">
+		<parameter name="Market" value="CRPEN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<parameter name="browser" value="chrome" />
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="AddEnquiryTestCRPJPN" group-by-instances="true">
+		<parameter name="Market" value="CRPJPN" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<parameter name="browser" value="firefox" />
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+	<test name="AddEnquiryTestKOR" group-by-instances="true">
+		<parameter name="Market" value="KOR" />
+		<classes>
+			<class name="com.cactus.whiteboard.tests.AddEnquiryTest">
+				<parameter name="browser" value="chrome" />
+				<methods>
+					<include name="createEnquiryData" />
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+</suite> <!-- Suite -->

@@ -1,0 +1,24 @@
+package com.cactus.insights.tests;
+
+import java.util.List;
+import java.util.Map;
+
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import com.cactus.insights.actions.RegisterFormActions;
+import com.cactus.insights.actions.SearchPageActions;
+import com.cactus.insights.tests.BaseTest;
+import com.cactus.eosapp.actions.FeedbackActions;
+import com.cactus.utils.ExcelUtil;
+
+public class SearchTest extends BaseTest {
+	private SearchPageActions searchActions;
+	// Register from Q&A page
+		@Test
+		public void searchResultValid() {
+			searchActions = new SearchPageActions(driver, test, wait);
+			searchActions.searchValidData();
+		}
+	
+}

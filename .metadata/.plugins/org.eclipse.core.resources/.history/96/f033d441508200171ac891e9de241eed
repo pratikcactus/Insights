@@ -1,0 +1,17 @@
+package com.cactus.inits;
+
+public class Config {
+	
+	public static final String SERVICE_PAGE_TITLE = "online.editage";
+	public static final String WHITEBOARD_DASHBOARD_PAGE_TITLE = "English | whiteboard.cactusglobal.com";
+	public static final String WHITEBOARD_HOME_PAGE_TITLE = "Home | whiteboard.cactusglobal.com";
+	public static final String WHITEBOARD_PAGE_TITLE = "whiteboard.cactusglobal.com";
+	public static final String CRM_ADD_ENQUIRY_PAGE_TITLE = "Add Enquiry  |  CACTUS CRM";
+	public static final String CRM_PAGE_TITLE = "CACTUS CRM";
+	public static final String ROW_TEST_SITE = "Educational resources for researchers";
+	
+	public static String ip="localhost";
+
+	//ROW URL
+	public static String insightURL="https://ei.editage.com/insights";
+}

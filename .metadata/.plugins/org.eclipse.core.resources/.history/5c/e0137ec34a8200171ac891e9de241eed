@@ -1,0 +1,316 @@
+package com.cactus.whiteboard.pages;
+
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.FindBys;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.cactus.crm.pages.AddEnquiryPage;
+import com.cactus.crm.pages.EnquiryAndJobViewPage;
+import com.cactus.executor.Executioner;
+import com.cactus.inits.AbstractPage;
+import com.cactus.inits.Config;
+import com.cactus.utils.Util;
+import com.relevantcodes.extentreports.ExtentTest;
+import com.relevantcodes.extentreports.LogStatus;
+
+public class Dashboard extends AbstractPage {
+	private Executioner executor;
+	private ExtentTest test;
+	Util util;
+
+	@FindBy(xpath = "//*[@id='headerRight']//a[contains(@href,'logout')]")
+	WebElement logoutLink;
+
+	@FindBy(xpath = "//*[@id='nice-menu-1']/li/a")
+	List<WebElement> menuList;
+
+	@FindBy(xpath = ".//ul[@id='nice-menu-1']//a[contains(text(),'Navigation')]")
+	WebElement navigatioMenu;
+
+	@FindBy(xpath = ".//ul[@id='nice-menu-1']//a[contains(text(),'Add enquiry')]")
+	WebElement addNewenquiry;
+
+	@FindBy(xpath = "//ul[@id='clientList']/li[@class='last']/a")
+	WebElement enquiryCodeLink;
+
+	@FindBy(xpath = "//ul[@id='clientList']/li[@class='last']/a/..")
+	WebElement searchCode;
+
+	@FindBy(xpath = "//div[@class='searchTitle']/a[contains(@title,'New')]")
+	WebElement newViewLink;
+
+	@FindBy(xpath = "//div[@class='searchTitle']/a[contains(@title,'Old')]")
+	WebElement oldViewLink;
+
+	@FindBys(value = { @FindBy(xpath = ".//*[@class='pager-next last']") })
+	List<WebElement> nextPointer;
+
+	@FindBys(value = { @FindBy(xpath = ".//*[@class='pager-current']") })
+	List<WebElement> currentPointer;
+
+	@FindBys(value = { @FindBy(xpath = ".//*[@class='pagedisplay']") })
+	List<WebElement> pageDisplay;
+
+	@FindBys(value = { @FindBy(xpath = ".//*[@class='next']") })
+	List<WebElement> next;
+
+	@FindBy(xpath = ".//*[@id='breadcrumMenuContainer']//img[@class='hm-img']")
+	WebElement homeImg;
+
+	@FindBy(xpath = ".//a[contains(.,'InhouseETE')]")
+	WebElement inHouseETE;
+
+	WebElement idmainSearchtype;
+
+	By byBigLoader = By.xpath(".//*[@class='bigLoader']");
+	By byCurrentPointer = By.xpath(".//*[@class='pager-current']");
+	By ByAllocationSectionHeader = By.xpath("//*[@class='dashboardBlockHeader' and contains(.,'Allocated Jobs')]");
+	By byOngoingJobsSectionHeader = By.xpath("//*[@class='dashboardBlockHeader' and contains(.,'Ongoing Jobs')]");
+	By bySuccessMessage = By.xpath(".//*[@id='messageContainer']/div[@class='message status']");
+
+	public Dashboard(WebDriver driver, WebDriverWait wait, ExtentTest test) {
+		super(driver, wait, test);
+		this.test = test;
+		this.executor = new Executioner(driver, test, wait);
+		util = Util.getInstance();
+		PageFactory.initElements(driver, this);
+		executor.softWaitforCondition(ExpectedConditions.titleContains(Config.WHITEBOARD_PAGE_TITLE), "Wait for Title");
+		executor.softWaitforVisibilityOfWebElement(logoutLink, "Wait until logout Element is displayed");
+		executor.softWaitforCondition(ExpectedConditions.invisibilityOfElementLocated(getEditageLoader()),
+				"Invisibility of spinner");
+		if (!driver.getTitle().trim().toLowerCase().contains(Config.WHITEBOARD_PAGE_TITLE.toLowerCase())) {
+			executor.addStatus(LogStatus.FAIL, "This is not  the  WhiteBoard Dashboard  Page");
+			throw new IllegalStateException("This is not  the  WhiteBoard Dashboard  Page");
+		}
+
+	}
+
+	public WebElement getSearchCode() {
+		return searchCode;
+	}
+
+	public WebElement getLogoutLink() {
+		return logoutLink;
+	}
+
+	public By getByCurrentPointer() {
+		return byCurrentPointer;
+	}
+
+	public By getBySuccessMessage() {
+		return bySuccessMessage;
+	}
+
+	public void goToJobSection() {
+		executor.waitForPageLoadJS();
+		executor.softWaitforVisibilityOfWebElement(homeImg, "Home Img is displayed");
+		if (!executor.isElementPresent(ByAllocationSectionHeader)) {
+			executor.click(homeImg, "Click on HomeImg");
+			executor.softWaitforInvisibilityOFWebElement(byBigLoader, "Invisibility of BigLoader");
+			executor.click(homeImg, "Click on HomeImg");
+			executor.waitForPageLoadJS();
+			executor.click(inHouseETE, "click on inHouseETE");
+			executor.softWaitforInvisibilityOFWebElement(byBigLoader, "Invisibility of BigLoader");
+			executor.softWaitforVisibilityOfWebElement(ByAllocationSectionHeader, "Home Img is displayed");
+		}
+
+	}
+
+	public AddEnquiryPage navigateToNewEnquiry() {
+		executor.mouseHover(navigatioMenu);
+		executor.click(addNewenquiry, "Click on Navigation and click Add enquiry (new).");
+		return new AddEnquiryPage(driver, wait, test);
+	}
+
+	public void enterInSolarSearch(String code) {
+		executor.type(idmainSearchtype, code, "Enter in SolarSearch");
+		executor.sendkeys(idmainSearchtype, Keys.ENTER, "Send Enter Keys");
+	}
+
+	public EnquiryAndJobViewPage searchJobAndNavigateToJobPage(String clientEmail) {
+		enterInSolarSearch(clientEmail);
+		executor.verifyTrue(executor.isElementDisplayed(searchCode, "SearchCode"), "Verify if Search code exists");
+		executor.verifyTrue(executor.isElementDisplayed(enquiryCodeLink, "EnquiryCode"),
+				"Verify if EnquiryCode code exists");
+
+		executor.click(enquiryCodeLink, "EnquiryCode");
+		executor.softWaitforVisibilityOfWebElement(newViewLink, "NewViewLink");
+		String windowHandle = executor.getCurrentWindowHandle();
+		executor.click(newViewLink, "NewViewLink");
+		executor.findAndSwitchToNewWindow(windowHandle);
+		return new EnquiryAndJobViewPage(driver, wait, test, clientEmail);
+	}
+
+	public void clickOnAcceptJob(String jobId) {
+		By byXpath = By.xpath("//td[contains(@class,'views-field')]/strong[contains(.,'" + jobId
+				+ "')]/../..//td/input[@type='button']");
+
+		WebElement elAccept = executor.getWebElement(byXpath);
+
+		if (!executor.isWebElementVisible(elAccept)) {
+			JavascriptExecutor js = (JavascriptExecutor) driver;
+			js.executeScript("arguments[0].scrollIntoView(true);", elAccept);
+			// executor.scrollDown();
+		}
+		if (!executor.isWebElementVisible(elAccept)) {
+			executor.scrollDown();
+		}
+		executor.moveToElement(elAccept);
+		executor.click(elAccept, "click on Accept Button");
+
+		if (executor.isAlertPresent())
+			executor.acceptUnhandledAlert();
+
+		executor.softWaitforInvisibilityOFWebElement(byBigLoader, "Invisibility of Big Loader");
+		int i=0;
+		while (executor.isElementPresent(byBigLoader)&&i<5) {
+			executor.softWaitforInvisibilityOFWebElement(byBigLoader, "Invisibility of Big Loader");
+			i++;
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public void clickOnAcceptedJobid(String jobid) {
+		By xpath = By
+				.xpath("//h3[@class='dashboardBlockHeader' and contains(.,'Ongoing Jobs')]/../table//tr/td/a[contains(.,'"
+						+ jobid + "')]");
+
+		if (!executor.isElementPresent(xpath)) {
+			xpath = By.xpath(".//a[contains(.,'" + jobid + "')]");
+		}
+
+		executor.moveToElement(xpath);
+		// executor.sendkeys(xpath, Keys.PAGE_DOWN, "Send keys");
+
+		executor.actionClick(xpath, "Click on AcceptId");
+
+		executor.softWaitforCondition(ExpectedConditions.numberOfwindowsToBe(2), "No of windows to be 2");
+
+	}
+
+	public EnquiryAndJobViewPage findAndClickOnJObId(String jobId, String email) {
+
+		By jobCodeXpath = By.xpath("//td[contains(@class,'views-field')]//strong[contains(.,'" + jobId + "')]");
+		By jobCodeWithLinkXpath = By.xpath(".//a[contains(.,'" + jobId + "')]");
+
+		String currentWindowHandle = driver.getWindowHandle();
+		String pageCount = "";
+		boolean pageFlag = true;
+		int l = currentPointer.size();
+
+		boolean jobIdFlag = executor.isElementPresent(jobCodeXpath);
+		boolean jobIdWithLinkFlag = executor.isElementPresent(jobCodeWithLinkXpath);
+		if (!jobIdWithLinkFlag && !jobIdFlag) {
+			for (int i = 0; i < l; i++) {
+
+				pageCount = currentPointer.get(i).getText();
+				pageFlag = isLastPage(pageCount);
+
+				while (!jobIdFlag && !pageFlag) {
+					executor.moveToElement(nextPointer.get(i));
+					executor.scrollDown();
+					executor.click(nextPointer.get(i), "Click on Next");
+					executor.waitForPageLoadJS();
+					pageCount = currentPointer.get(i).getText();
+					pageFlag = isLastPage(pageCount);
+					jobIdFlag = executor.isElementPresent(jobCodeXpath);
+					executor.softWaitforVisibilityOfWebElement(currentPointer.get(i), "Visibility of CurrentPointer");
+					executor.waitForPageLoadJS();
+				}
+
+				if (jobIdFlag) {
+					// clickOnAcceptJob(jobId);
+					break;
+				}
+
+			}
+
+		}
+
+		if (jobIdFlag) {
+			clickOnAcceptJob(jobId);
+		}
+		executor.pause(1);
+		jobIdWithLinkFlag = executor.isElementPresent(jobCodeWithLinkXpath);
+
+		if (!jobIdWithLinkFlag) {
+			l = pageDisplay.size();
+			for (int i = 0; i < l; i++) {
+				pageCount = pageDisplay.get(i).getAttribute("value");
+				pageFlag = isLastPageForLink(pageCount);
+
+				while (!jobIdWithLinkFlag && !pageFlag) {
+					executor.moveToElement(next.get(i));
+					executor.scrollDown();
+					executor.click(next.get(i), "Click on Next");
+					executor.waitForPageLoadJS();
+					pageCount = pageDisplay.get(i).getAttribute("value");
+					pageFlag = isLastPageForLink(pageCount);
+					jobIdWithLinkFlag = executor.isElementPresent(jobCodeWithLinkXpath);
+					executor.softWaitforVisibilityOfWebElement(pageDisplay.get(i), "Visibility of pageDisplay");
+
+				}
+
+				if (jobIdWithLinkFlag) {
+					break;
+				}
+			}
+
+		}
+
+		if (jobIdWithLinkFlag) {
+			clickOnAcceptedJobid(jobId);
+			executor.findAndSwitchToNewWindow(currentWindowHandle);
+			executor.waitForPageLoadJS();
+
+		} else {
+			executor.addStatus(LogStatus.ERROR, "Job code doesn't exist");
+			throw new IllegalStateException("Job code doesn't exist");
+		}
+
+		return new EnquiryAndJobViewPage(driver, wait, test, email);
+
+	}
+
+	public boolean isLastPage(String str) {
+		String[] strArray = str.split(" ");
+		String currentPage = strArray[0];
+		String totalPage = strArray[2];
+		return currentPage.equalsIgnoreCase(totalPage);
+
+	}
+
+	public boolean isLastPageForLink(String str) {
+		String[] strArray = str.split("/");
+		String currentPage = strArray[0];
+		String totalPage = strArray[1];
+		return currentPage.equalsIgnoreCase(totalPage);
+
+	}
+
+	public void checkCRMJobViewPage(String testJobURL, String crmLogoutURL, String currentWindowHandle, String jobCode,
+			String email) {
+		if (!testJobURL.contains(jobCode)) {
+			testJobURL = testJobURL + jobCode;
+		}
+		executor.openSeperateBlankWindow();
+		executor.navigateToURL(testJobURL);
+		EnquiryAndJobViewPage jobViewPage = new EnquiryAndJobViewPage(driver, wait, test, email);
+		executor.waitForPageLoadJS();
+		executor.navigateToURL(crmLogoutURL);
+		executor.waitForPageLoadJS();
+		executor.actionClick(jobViewPage.getLogout(), "logout");
+		executor.closeBrowser();
+		driver.switchTo().window(currentWindowHandle);
+	}
+
+}

@@ -1,0 +1,82 @@
+package com.cactus.whiteboard.tests;
+
+import java.util.Map;
+
+import org.testng.annotations.Test;
+
+import com.cactus.crm.actions.CreateEnquiryActions;
+
+import com.cactus.crm.pages.EnquiryAndJobViewPage;
+import com.cactus.utils.DataProviderClass;
+import com.cactus.utils.HipChatUtil;
+import com.relevantcodes.extentreports.LogStatus;
+
+public class AddEnquiryTest extends BaseTest {
+
+	@Test(alwaysRun = true, dataProvider = "enquiryDataAll", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createEnquiryData(Map<String, String> testData) {
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		CreateEnquiryActions addEnquiryAction = new CreateEnquiryActions(driver, test, wait);
+		EnquiryAndJobViewPage enquiryViewPage = addEnquiryAction.createAndSubmitEnquiry(testData);
+
+	
+		addEnquiryAction.writeEnqData(testData);
+		if (getHipChatNotificationsFlag()) {
+			new HipChatUtil().javaCurlSendHipchat("Enquiry:" + testData.get("EnquiryCode") + ",Env:"
+					+ testData.get("testEnv") + ",status:" + testData.get("status"));
+		}
+		enquiryViewPage.clickOnSignOut();
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "newEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createEnquiryNewUser(Map<String, String> testData) {
+		executor.logCase("Auto-18 :  Create enquiry from CRM.");
+		executor.logStep("Step: Open url:<a>" + testURL + "</a>");
+
+		CreateEnquiryActions addEnquiryAction = new CreateEnquiryActions(driver, test, wait);
+		EnquiryAndJobViewPage enquiryViewPage = addEnquiryAction.createAndSubmitEnquiry(testData);
+
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		addEnquiryAction.writeEnqData(testData);
+
+		enquiryViewPage.clickOnSignOut();
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "existingEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createEnquiryExistingUser(Map<String, String> testData) {
+		executor.logCase("Auto-27 :  Create Automation Script to create enquiry for an existing client from CRM.");
+		executor.logStep("Step: Open url:<a>" + testURL + "</a>");
+
+		testData.put("CreateNewUser", "no");
+
+		CreateEnquiryActions addEnquiryAction = new CreateEnquiryActions(driver, test, wait);
+		EnquiryAndJobViewPage enquiryViewPage = addEnquiryAction.createAndSubmitEnquiry(testData);
+
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		addEnquiryAction.writeEnqData(testData);
+
+		enquiryViewPage.clickOnSignOut();
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "enquiryClientData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createEnquiryNewAndExistingUser(Map<String, String> testData) {
+		executor.logCase("Auto-28 : Integration of New & Existing client CRM create enquiry scripts");
+		executor.logStep("Step: Open url:<a>" + testURL + "</a>");
+
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+
+		createEnquiryNewUser(testData);
+		testData.put("CreateNewUser", "no");
+		createEnquiryExistingUser(testData);
+
+		System.out.println("FINISH");
+	}
+
+}

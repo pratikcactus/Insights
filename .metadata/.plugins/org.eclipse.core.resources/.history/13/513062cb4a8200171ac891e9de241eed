@@ -1,0 +1,28 @@
+package com.cactus.whiteboard.tests;
+
+import java.util.Map;
+
+import org.testng.annotations.Test;
+
+import com.cactus.crm.actions.AllocateJobActions;
+import com.cactus.crm.actions.ConfirmJobActions;
+import com.cactus.crm.pages.EnquiryAndJobViewPage;
+
+public class AllocateJobTest extends BaseTest {
+
+	@Test(dataProvider = "whiteBoardNewClientData", groups = { "regression" })
+	public void createJobNewUser(Map<String, String> testData) {
+		
+		testData.put("testURL", util.getTestURL("CRMJobView", "ENG", configMap));
+	new AllocateJobActions(driver, test, wait).allocateJobFromPM(testData);
+	
+	}
+	
+	@Test(dataProvider = "whiteBoardNewClientData", groups = { "regression" })
+	public void createJobExistingUser(Map<String, String> testData) {
+		
+		EnquiryAndJobViewPage jobViewPage=new ConfirmJobActions(driver, test, wait).createJobExistingUser(testData);
+		jobViewPage.logout();
+	}
+
+}

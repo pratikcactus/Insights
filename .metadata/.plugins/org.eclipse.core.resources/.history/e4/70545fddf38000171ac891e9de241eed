@@ -1,0 +1,7 @@
+package com.cactus.inits;
+
+public class Config {
+
+	//ROW URL
+	public static String insightURL="https://ei.editage.com/insights";
+}

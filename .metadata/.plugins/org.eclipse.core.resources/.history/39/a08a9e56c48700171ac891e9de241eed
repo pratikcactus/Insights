@@ -1,0 +1,27 @@
+package com.cactus.insights.pages;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.cactus.executor.Executioner;
+import com.cactus.inits.AbstractPage;
+import com.cactus.inits.Config;
+import com.cactus.utils.Util;
+import com.relevantcodes.extentreports.ExtentTest;
+
+public class SearchPage {
+	private final WebDriver driver;
+	private WebDriverWait wait;
+	private Executioner executor;
+	private ExtentTest test;
+	private Util util;
+	private LoginPage loginPage;
+
+
+	
+
+}

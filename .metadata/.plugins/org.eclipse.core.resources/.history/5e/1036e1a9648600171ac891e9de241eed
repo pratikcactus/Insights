@@ -1,0 +1,23 @@
+package com.cactus.insights.tests;
+
+import java.util.List;
+import java.util.Map;
+
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import com.cactus.editage.tests.BaseTest;
+import com.cactus.eosapp.actions.FeedbackActions;
+import com.cactus.insights.pages.LoginPage;
+import com.cactus.utils.ExcelUtil;
+
+public class RegisterTest extends BaseTest {
+
+	//Login from Homepage Top Section
+		@Test
+		public void loginFromHomepage() {
+			driver.navigate().refresh();
+			loginPage=new LoginPage(driver, test, wait);
+			loginPage.login("authenticated-user-test@mailinator.com", "Ye@r2o17AwsTeSt_1", "authenticatedusertest" );
+		}
+}

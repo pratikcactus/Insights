@@ -1,0 +1,142 @@
+package com.cactus.whiteboard.tests;
+
+import java.util.Map;
+
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import com.cactus.crm.actions.AllocateJobActions;
+import com.cactus.crm.actions.ConfirmJobActions;
+import com.cactus.crm.actions.JobActions;
+import com.cactus.crm.pages.EnquiryAndJobViewPage;
+import com.cactus.eosapp.actions.FeedbackActions;
+import com.cactus.utils.DataMapUtil;
+import com.cactus.utils.DataProviderClass;
+import com.cactus.utils.ExcelUtil;
+import com.cactus.utils.HipChatUtil;
+import com.relevantcodes.extentreports.LogStatus;
+
+public class CompleteJobFlowTest extends BaseTest {
+
+	@Test(alwaysRun = true, dataProvider = "customClientData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClient(Map<String, String> testData) {
+		String testURL = util.getTestURL("CRMJOBVIEW", "ENG", configMap);
+
+		String testURLCRMJobView = util.getTestURL("CRMJobView", "ENG", configMap);
+		testData.put("testURLCRMJobView", testURLCRMJobView);
+
+		testData.put("testURL", testURL);
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		EnquiryAndJobViewPage jobViewPage = new ConfirmJobActions(driver, test, wait).createJobForUser(testData);
+		jobViewPage.logout();
+		if (getHipChatNotificationsFlag()) {
+			new HipChatUtil().javaCurlSendHipchat(getJobMessage(testData));
+		}
+		new AllocateJobActions(driver, test, wait).allocateJobFromPM(testData);
+		jobViewPage.logout();
+		
+		Map<String, String> testDataFL = new DataMapUtil().getFLMap(testData);
+		testDataFL.put("crmLogoutURL", util.getTestURL("CRMLOGOUT", "ENG", configMap));
+		testDataFL.put("testURL", util.getTestURL("CRM", "ENG", configMap));
+		testDataFL.put("testURLCRMJobView", testURLCRMJobView);
+		new JobActions(driver, test, wait).acceptJob(testDataFL);
+		
+		executor.pause(1);
+		executor.navigateToURL(testDataFL.get("testURL"));
+		new JobActions(driver, test, wait).markJobComplete(testDataFL);
+
+		if (testData.get("JobToBeDeliveredBy").equalsIgnoreCase("CM")) {
+			executor.navigateToURL(testDataFL.get("testURL"));
+			new JobActions(driver, test, wait).sendToClientFromCM(testData);
+		}
+
+		if (getHipChatNotificationsFlag()) {
+			new HipChatUtil().javaCurlSendHipchat(getJobMessage(testData));
+		}
+
+	}
+
+	@Test(alwaysRun = true, dataProvider = "newEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientNewUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "existingEnquiryData", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientExistingUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "enquiryDataAll", dataProviderClass = DataProviderClass.class, groups = {
+			"regression" })
+	public void createJobAllocateAcceptAndSendToClientUser(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "formData", groups = { "regression" })
+	public void createSTCJobAndGiveFeedback(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		
+		//testData.put("testEnv", "test5");
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		testURL = util.getTestURL("ecf", testData.get("Partner"), configMap);
+		executor.navigateToURL(testURL);
+
+		configMap.put("market", testData.get("Partner"));
+
+		
+		testURL = util.getTestURL("ServiceFeedback", testData.get("Partner")+"APP", configMap);
+
+		FeedbackActions feedbackActions = new FeedbackActions(driver, test, wait);
+		feedbackActions.loginAndNavigateToFeedbackPage(testData, testURL);
+		
+		feedbackActions.giveFeedback(testData);
+		System.out.println("FINISH");
+	}
+	
+	@Test(alwaysRun = true, dataProvider = "uploadTestData", groups = { "regression" })
+	public void createSTCJobAndGiveFeedbackUpload(Map<String, String> testData) {
+		executor.addStatus(LogStatus.INFO, testData.get("AutoId"));
+		createJobAllocateAcceptAndSendToClient(testData);
+		
+		//testData.put("testEnv", "test5");
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		testURL = util.getTestURL("ecf", testData.get("Partner"), configMap);
+		executor.navigateToURL(testURL);
+
+		configMap.put("market", testData.get("Partner"));
+
+		
+		testURL = util.getTestURL("ServiceFeedback", testData.get("Partner")+"APP", configMap);
+
+		FeedbackActions feedbackActions = new FeedbackActions(driver, test, wait);
+		feedbackActions.loginAndNavigateToFeedbackPage(testData, testURL);
+		
+		feedbackActions.giveFeedback(testData);
+		System.out.println("FINISH");
+	}
+
+	public String getJobMessage(Map<String, String> testData) {
+		return "Job :" + testData.get("JobCode") + ",Env:" + testData.get("testEnv") + ",status:"
+				+ testData.get("status");
+	}
+
+	@DataProvider // (parallel=true)
+	public Object[][] formData() {
+		return new ExcelUtil().getUserDataFromExcel("testData_EOSAPP.xlsx", "feedback");
+	}
+	
+	@DataProvider // (parallel=true)
+	public Object[][] uploadTestData() {
+		return new ExcelUtil().getUserDataFromExcel("testDataUpload.xlsx", "feedback");
+	}
+}

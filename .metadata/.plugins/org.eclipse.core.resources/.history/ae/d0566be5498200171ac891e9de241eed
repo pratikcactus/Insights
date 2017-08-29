@@ -1,0 +1,133 @@
+package com.cactus.insights.tests;
+
+import java.util.Map;
+
+import org.testng.annotations.DataProvider;
+
+import org.testng.annotations.Test;
+
+import com.cactus.editage.actions.FormActions;
+import com.cactus.editage.pages.CheckPricingFormPage;
+import com.cactus.editage.pages.CompleteYourProfilePage;
+import com.cactus.editage.pages.DashboardPage;
+import com.cactus.editage.pages.EnquirySuccessPage;
+import com.cactus.editage.pages.LoginPage;
+import com.cactus.editage.pages.ResetPasswordPage;
+import com.cactus.editage.pages.ReviewAndConfirmFormPage;
+import com.cactus.editage.pages.SelectServiceFormPage;
+import com.cactus.editage.pages.UploadManuscriptFormPage;
+
+import com.cactus.utils.ExcelUtil;
+
+
+
+public class RegisterTest extends BaseTest {
+	private SelectServiceFormPage selectServicePage;
+	private CheckPricingFormPage checkPricinPage;
+	private UploadManuscriptFormPage uploadManuscriptPage;
+	private ReviewAndConfirmFormPage reviewAndConfirmPage;
+	private EnquirySuccessPage enquirySuccessPage;
+	private ResetPasswordPage resetPasswordPage;
+	private CompleteYourProfilePage completeProfilePage;
+	
+	private FormActions formAction;
+	
+	private LoginPage loginPage;
+	private DashboardPage dashboard;
+	
+	@Test(dataProvider = "NCFformDataENG")
+	public void ncfFormENG(Map<String, String> testData) {
+		driver.navigate().refresh();
+		formAction=new FormActions(driver, test, wait);
+		formAction.fillClientForm(testData);
+	}
+	
+	@Test(dataProvider = "NCFformDataJPN")
+	public void ncfFormJPN(Map<String, String> testData) {
+		driver.navigate().refresh();
+		formAction=new FormActions(driver, test, wait);
+		formAction.fillClientForm(testData);
+	}
+
+	@Test(dataProvider = "formDataNCF",threadPoolSize=2)
+	public void ncfForm(Map<String, String> testData) {
+		driver.navigate().refresh();
+		selectServicePage = new SelectServiceFormPage(driver, test, wait);
+		selectServicePage.selectServices(testData.get("services"));
+		selectServicePage.selectSubServices(testData.get("subServices"));
+
+		double count = Double.parseDouble(testData.get("wordCount"));
+		if (testData.get("useWordCount").equalsIgnoreCase("Yes")) {
+			selectServicePage.enterWordCount(testData.get("wordCount"));
+
+			if (count > 8000)
+				uploadManuscriptPage = selectServicePage
+						.selectPlanAndNavigateToUploadManuscriptPage(testData.get("checkPlan"));
+			else{
+				checkPricinPage = selectServicePage.selectPlanAndNavigateToPricingPage(testData.get("checkPlan"));
+			uploadManuscriptPage = checkPricinPage.clickonProceed();
+			}
+		} else {
+			uploadManuscriptPage = selectServicePage.clickOnGetAQuoteByUploadManuscript();
+		}
+		
+		uploadManuscriptPage.fillManuscriptForm(testData);
+		reviewAndConfirmPage = uploadManuscriptPage.clickOnConfirm();
+		enquirySuccessPage = reviewAndConfirmPage.clickonConfirm();
+		resetPasswordPage=enquirySuccessPage.clickonLoginButton();
+		completeProfilePage=resetPasswordPage.resetPassword(testData.get("NewPassword"));
+		completeProfilePage.updateUserProfile(testData);
+		completeProfilePage.clickOnDoneButton();
+	}
+	
+	@Test(dataProvider = "formDataECF",threadPoolSize=2)
+	public void ecfForm(Map<String,String> testData){
+		driver.navigate().refresh();
+		loginPage=new LoginPage(driver, test, wait);
+		dashboard=loginPage.loginToEditageDashboard(testData.get("userName"), testData.get("password"));
+		selectServicePage=dashboard.clickonSubmitJobAndNavigateToServicesPage();
+		
+		selectServicePage.selectServices(testData.get("services"));
+		selectServicePage.selectSubServices(testData.get("subServices"));
+
+		double count = Double.parseDouble(testData.get("wordCount"));
+		if (testData.get("useWordCount").equalsIgnoreCase("Yes")) {
+			selectServicePage.enterWordCount(testData.get("wordCount"));
+
+			if (count > 8000)
+				uploadManuscriptPage = selectServicePage
+						.selectPlanAndNavigateToUploadManuscriptPage(testData.get("checkPlan"));
+			else{
+				checkPricinPage = selectServicePage.selectPlanAndNavigateToPricingPage(testData.get("checkPlan"));
+			uploadManuscriptPage = checkPricinPage.clickonProceed();
+			}
+		} else {
+			uploadManuscriptPage = selectServicePage.clickOnGetAQuoteByUploadManuscript();
+		}
+		
+		uploadManuscriptPage.fillManuscriptForm(testData);
+		reviewAndConfirmPage = uploadManuscriptPage.clickOnConfirm();
+
+	}
+	
+	
+	@DataProvider//(parallel=true)
+	public Object[][] formDataNCF() {
+		return new ExcelUtil().getUserDataFromExcel("testData.xlsx", "ncf");
+	}
+	
+	@DataProvider//(parallel=true)
+	public Object[][] formDataECF() {
+		return new ExcelUtil().getUserDataFromExcel("testData.xlsx", "ecf");
+	}
+	
+	@DataProvider//(parallel=true)
+	public Object[][] NCFformDataENG() {
+		return new ExcelUtil().getUserDataFromExcel("testData.xlsx", "ncf-eng");
+	}
+	
+	@DataProvider//(parallel=true)
+	public Object[][] NCFformDataJPN() {
+		return new ExcelUtil().getUserDataFromExcel("testData.xlsx", "ncf-jpn");
+	}
+}

@@ -1,0 +1,368 @@
+package com.cactus.insights.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.cactus.executor.Executioner;
+import com.cactus.inits.Config;
+import com.cactus.utils.Util;
+import com.relevantcodes.extentreports.ExtentTest;
+
+public class LoginPage {// extends AbstractPage
+	private final WebDriver driver;
+	private WebDriverWait wait;
+	private Executioner executor;
+	private ExtentTest test;
+	private Util util;
+
+	// Login Button
+	@FindBy(xpath = "//div[@class='anonymous-login anonymous-text']/a")
+	public WebElement logIn;
+
+	// Login Pop-Up
+	@FindBy(xpath = "//div[@id='mini-panel-register_popup']")
+	public WebElement popUpFrame;
+
+	// Email ID in Login
+	@FindBy(id = "edit-name--2")
+	public WebElement EmailId;
+
+	// Password in Login
+	@FindBy(id = "edit-pass--2")
+	public WebElement password;
+
+	// Login Button
+	@FindBy(id = "edit-submit--3")
+	public WebElement loginButton;
+
+	// Save to Library Login Button
+	@FindBy(xpath = "//div[@class='overlay-close']//input[@id='edit-submit--2']")
+	public WebElement libraryLoginButton;
+
+	// Login Button
+	@FindBy(id = "edit-submit")
+	public WebElement loginButtonQA;
+
+	// Email ID QA in Login
+	@FindBy(id = "edit-name")
+	public WebElement EmailIdQA;
+
+	// Password QA in Login
+	@FindBy(id = "edit-pass")
+	public WebElement passwordQA;
+
+	// Email ID Save to Library in Login
+	@FindBy(xpath = "//div[@class='overlay-close']//input[@id='edit-name']")
+	public WebElement EmailIdLibrary;
+
+	// Password Save to Library in Login
+	@FindBy(xpath = "//div[@class='overlay-close']//input[@id='edit-pass']")
+	public WebElement passwordLibrary;
+
+	// Banner Pop-up
+	@FindBy(id = "at-cv-lightbox-message")
+	public WebElement bannerpopup;
+
+	// Banner Pop-up Save to Library
+	@FindBy(xpath = "//div[@class='panel-pane pane-block pane-insight-client-custom-user-login-custom']")
+	public WebElement bannerPopupLibrary;
+
+	// Username block
+	@FindBy(xpath = "//div[@class='user-name']")
+	public WebElement username;
+
+	// Username block
+	@FindBy(xpath = "//a[@class='at-cv-button at-cv-lightbox-yesno at-cm-no-button']")
+	public WebElement bannerButton;
+
+	// Community Menu block
+	@FindBy(xpath = "//li[@class='mn-megamenu-item level-1 mega mega-align-justify dropdown list-5']")
+	public WebElement communityMenu;
+
+	// Q&A menu link
+	@FindBy(xpath = "//li[@class='mn-megamenu-item level-2 mega level-2-item dropdown-submenu list-1 default-selection open']")
+	public WebElement qaMenuLink;
+
+	// Save to Read Later 1st article
+	@FindBy(xpath = "//div[@class='views-row views-row-1']//a[contains(@title, 'Save to read later')]")
+	public WebElement saveToReadLater;
+
+	// Iframe Login
+	@FindBy(id = "rufous-sandbox")
+	public WebElement iframeLogin;
+
+	// Click on Article Checkbox
+	@FindBy(xpath = "//a[contains(@href,'3Aarticle')]")
+	public WebElement articleCheckbox;
+	
+	// Click on Logout link
+		@FindBy(xpath = "//a[contains(@href,'/user/logout')]")
+		public WebElement logoutLink;
+
+	// Search Result 1st result
+	@FindBy(xpath = "//section[@class='search-results']/article[1]//h3//a")
+	public WebElement firstSearchResults;
+
+	// Login Link Access Denied
+	@FindBy(xpath = "//span[@class='login-editage-account-metered']/a")
+	public WebElement signInLink;
+	
+	//Error Message Email
+	@FindBy(xpath = "//div[@class='messages messages--error']//li[1]")
+	public WebElement emailerrorMessage;
+	
+	//Error Message
+	@FindBy(xpath = "//div[@class='messages messages--error']//li[2]")
+	public WebElement passworderrorMessage;
+	
+	//Main Error Message
+	@FindBy(xpath = "//div[@class='messages messages--error']")
+	public WebElement mainErrorMessage;
+	
+
+	public LoginPage(WebDriver driver, ExtentTest test, WebDriverWait wait) {
+		// super(driver, wait);
+		this.driver = driver;
+		this.wait = wait;
+		this.test = test;
+		executor = new Executioner(driver, test, wait);
+		util = Util.getInstance();
+
+		PageFactory.initElements(driver, this);
+		executor.softWaitforVisibilityOfWebElement(bannerpopup, "Wait until Check Login button is displayed");
+		if (executor.isElementDisplayed(bannerpopup, "banner pop-up") == true) {
+			executor.click(bannerButton, "No Thanks button for banner pop-up clicked");
+		} else {
+
+			executor.softWaitforVisibilityOfWebElement(logIn, "Wait until Check Login button is displayed");
+
+			if (!driver.getTitle().trim().toLowerCase().contains(Config.ROW_TEST_SITE.toLowerCase())) {
+				throw new IllegalStateException("This is not  the  Staging  site Page");
+			}
+		}
+	}
+	
+	public void loginHomePageClick(){
+		executor.click(logIn, "Login button clicked");
+	}
+
+	// HomePage Top Section Login
+	public void login() {
+		boolean flag1=false, flag2=false;
+		loginHomePageClick();
+		executor.softWaitforVisibilityOfWebElement(popUpFrame, "Wait until Check Login button is displayed");
+		executor.type(EmailId, "authenticated-user-test@mailinator.com", "Entered username in login pop-up");
+		if (driver.getCurrentUrl().contains("ei")) {
+			executor.type(password, "Ye@r2o17AwsTeSt_1", "Entered password  in login pop-up");
+		} else {
+			executor.type(password, "authenticatedusertest", "Entered password in login pop-up");
+		}
+		executor.click(loginButton, "Login Button clicked");
+		String username = executor.getText(By.xpath("//div[@class='user-name']"));
+		if(username.equalsIgnoreCase("Hello, Dr. Authenticated")){
+			flag1=true;
+		}else{
+			flag1=false;
+		}
+		executor.verifyEquals(username, "Hello, Dr. Authenticated", "Login is successful");
+		executor.clickJS(logoutLink, "Logout link clicked");
+		executor.softWaitforVisibilityOfWebElement(logIn, "Wait until Login button is present");
+		String login = logIn.getText();
+		if(login.equalsIgnoreCase("Login")){
+			flag2=true;
+		}else{
+			flag2=false;
+		}
+		if(flag1 && flag2){
+			executor.assertTrue(true,"Login and Logout successful");
+		}else{
+			executor.assertTrue(false,"Login and Logout unsuccessful");
+		}
+	}
+	
+	//Go to Q&A page
+	public void gotoQAPage(){
+		String url = driver.getCurrentUrl() + "ask-a-question";
+		executor.navigateToURL(url);
+	}
+
+	// Login from Q&A page
+	public void loginQA() {
+		boolean flag1=false, flag2=false;
+		executor.softWaitforElementToBeClickable(loginButtonQA, "Login Button on Q&A visible");
+		executor.type(EmailIdQA, "authenticated-user-test@mailinator.com", "Entered username in login pop-up");
+		if (driver.getCurrentUrl().contains("ei")) {
+			executor.type(passwordQA, "Ye@r2o17AwsTeSt_1", "Entered password  in login pop-up");
+		} else {
+			executor.type(passwordQA, "authenticatedusertest", "Entered password in login pop-up");
+		}
+		executor.click(loginButtonQA, "Login Button clicked");
+		executor.softWaitforInvisibilityOFWebElement(EmailIdQA, "Waiting for Email ID field to be invisible");
+		executor.waitForPageLoadJS();
+		String username = executor.getText(By.xpath("//div[@class='user-name']"));
+		if(username.equalsIgnoreCase("Hello, Dr. Authenticated")){
+			flag1=true;
+		}else{
+			flag1=false;
+		}
+		executor.verifyEquals(username, "Hello, Dr. Authenticated", "Login is successful");
+		executor.clickJS(logoutLink, "Logout link clicked");
+		executor.softWaitforVisibilityOfWebElement(logIn, "Wait until Login button is present");
+		String login = logIn.getText();
+		if(login.equalsIgnoreCase("Login")){
+			flag2=true;
+		}else{
+			flag2=false;
+		}
+		if(flag1 && flag2){
+			executor.assertTrue(true,"Login and Logout successful");
+		}else{
+			executor.assertTrue(false,"Login and Logout unsuccessful");
+		}
+	}
+	
+	//Go to save to Library
+	public void gotoSaveLibrary(){
+		String url = driver.getCurrentUrl() + "categories/grammar-and-writing";
+		executor.navigateToURL(url);
+		executor.softWaitforElementToBeClickable(saveToReadLater, "Wait for Save to Library button");
+	}
+	
+	// Login From Save to Library Click
+	public void clickSavetoLibrary() {
+		boolean flag1=false, flag2=false;
+		executor.click(saveToReadLater, "Save to Library button clicked");
+		executor.softWaitforVisibilityOfWebElement(libraryLoginButton, "Wait until Check Login button is displayed");
+		executor.type(EmailIdLibrary, "authenticated-user-test@mailinator.com", "Entered username in login pop-up");
+		if (driver.getCurrentUrl().contains("ei")) {
+			executor.type(passwordLibrary, "Ye@r2o17AwsTeSt_1", "Entered password  in login pop-up");
+		} else {
+			executor.type(passwordLibrary, "authenticatedusertest", "Entered password in login pop-up");
+		}
+		executor.click(libraryLoginButton, "Login Button clicked");
+		executor.softWaitforInvisibilityOFWebElement(libraryLoginButton, "Waiting for Email ID field to be invisible");
+		driver.switchTo().defaultContent();
+		executor.waitForPageLoadJS();
+		String username = executor.getText(By.xpath("//div[@class='user-name']"));
+		if(username.equalsIgnoreCase("Hello, Dr. Authenticated")){
+			flag1=true;
+		}else{
+			flag1=false;
+		}
+		executor.verifyEquals(username, "Hello, Dr. Authenticated", "Login is successful");
+		executor.clickJS(logoutLink, "Logout link clicked");
+		executor.softWaitforVisibilityOfWebElement(logIn, "Wait until Login button is present");
+		String login = logIn.getText();
+		if(login.equalsIgnoreCase("Login")){
+			flag2=true;
+		}else{
+			flag2=false;
+		}
+		if(flag1 && flag2){
+			executor.assertTrue(true,"Login and Logout successful");
+		}else{
+			executor.assertTrue(false,"Login and Logout unsuccessful");
+		}
+	}
+
+	//go to Access Denied Page
+	public void gotoAccessDeniedPage(){
+		executor.click(loginButtonQA, "Search Icon CLick");
+		executor.softWaitforElementToBeClickable(articleCheckbox, "Wait for Article checkbox to be clickable");
+		executor.actionClick(articleCheckbox, "Article Checkbox click");
+		executor.softWaitforElementToBeClickable(firstSearchResults, "Wait for first Search Result to be clickable");
+		executor.click(firstSearchResults, "click on first result");
+		driver.navigate().refresh();
+		executor.waitForPageLoadJS();
+		driver.navigate().refresh();
+		executor.softWaitforElementToBeClickable(signInLink, "Wait for SignIn Link");
+		executor.actionClick(signInLink, "Sign In link Clicked");
+		executor.softWaitforVisibilityOfWebElement(popUpFrame, "Wait until Check Login button is displayed");
+	}
+	// Login from Access Denied page
+	public void accessDeniedpage() {
+		boolean flag1=false, flag2=false;
+			executor.type(EmailId, "authenticated-user-test@mailinator.com", "Entered username in login pop-up");
+		if (driver.getCurrentUrl().contains("ei")) {
+			executor.type(password, "Ye@r2o17AwsTeSt_1", "Entered password  in login pop-up");
+		} else {
+			executor.type(password, "authenticatedusertest", "Entered password in login pop-up");
+		}
+		executor.click(loginButton, "Login Button clicked");
+		String username = executor.getText(By.xpath("//div[@class='user-name']"));
+		if(username.equalsIgnoreCase("Hello, Dr. Authenticated")){
+			flag1=true;
+		}else{
+			flag1=false;
+		}
+		executor.verifyEquals(username, "Hello, Dr. Authenticated", "Login is successful");
+		executor.clickJS(logoutLink, "Logout link clicked");
+		executor.softWaitforVisibilityOfWebElement(logIn, "Wait until Login button is present");
+		String login = logIn.getText();
+		if(login.equalsIgnoreCase("Login")){
+			flag2=true;
+		}else{
+			flag2=false;
+		}
+		if(flag1 && flag2){
+			executor.assertTrue(true,"Login and Logout successful");
+		}else{
+			executor.assertTrue(false,"Login and Logout unsuccessful");
+		}
+
+	}
+	
+	public void errorcheck(){
+		executor.click(logIn, "Login button clicked");
+		executor.softWaitforVisibilityOfWebElement(popUpFrame, "Wait until Check Login button is displayed");
+		executor.click(loginButton, "Login Button clicked");
+		executor.softWaitforVisibilityOfWebElement(emailerrorMessage, "Wait until Error is displayed");
+		String emailerror_message = emailerrorMessage.getText();
+		String passworderror_message = passworderrorMessage.getText();
+		if(emailerror_message.equalsIgnoreCase("Email field is required.")){
+			flag1=true;
+		}else{
+			flag1=false;
+		}
+		if(passworderror_message.equalsIgnoreCase("Password field is required.")){
+			flag2=true;
+		}else{
+			flag2=false;
+		}
+		executor.verifyEquals(passworderror_message, "Password field is required.", "Error message displayed successfully");
+		executor.click(logIn, "Login button clicked");
+		executor.softWaitforVisibilityOfWebElement(popUpFrame, "Wait until Check Login button is displayed");
+		executor.type(EmailId, "aasd", "Entered wrong username in login pop-up");
+		executor.click(loginButton, "Login Button clicked");
+		executor.softWaitforVisibilityOfWebElement(mainErrorMessage, "Wait until Error is displayed");
+		String commonerror_message = mainErrorMessage.getText();
+		executor.verifyEquals(commonerror_message, "Password field is required.", "Error message displayed successfully");
+		executor.click(loginButton, "Login Button clicked");
+		executor.softWaitforVisibilityOfWebElement(mainErrorMessage, "Wait until Error is displayed");
+		executor.clear(EmailId, "Email field clearing");
+		executor.clear(password, "Password field clearing");
+		executor.type(password, "aasd", "Entered wrong password in login pop-up");
+		executor.click(loginButton, "Login Button clicked");
+		executor.softWaitforVisibilityOfWebElement(mainErrorMessage, "Wait until Error is displayed");
+		commonerror_message = mainErrorMessage.getText();
+		executor.verifyEquals(commonerror_message, "Email field is required.", "Error message displayed successfully");
+		executor.click(loginButton, "Login Button clicked");
+		executor.softWaitforVisibilityOfWebElement(mainErrorMessage, "Wait until Error is displayed");
+		executor.clear(EmailId, "Email field clearing");
+		executor.clear(password, "Password field clearing");
+		executor.type(EmailId, "aasd", "Entered wrong username in login pop-up");
+		executor.type(password, "aasd", "Entered wrong password in login pop-up");
+		executor.click(loginButton, "Login Button clicked");
+		executor.softWaitforVisibilityOfWebElement(mainErrorMessage, "Wait until Error is displayed");
+		commonerror_message = mainErrorMessage.getText();
+		executor.verifyEquals(commonerror_message, "We do not recognize this username and password combination. Please try again.", "Error message displayed successfully");
+
+	}
+	
+	
+
+}

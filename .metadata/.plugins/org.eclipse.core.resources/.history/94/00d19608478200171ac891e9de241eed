@@ -1,0 +1,37 @@
+package com.cactus.insights.tests;
+
+import java.util.Map;
+
+import org.testng.annotations.DataProvider;
+
+import org.testng.annotations.Test;
+
+import com.cactus.editage.actions.FormActions;
+import com.cactus.editage.pages.CheckPricingFormPage;
+import com.cactus.editage.pages.CompleteYourProfilePage;
+import com.cactus.editage.pages.DashboardPage;
+import com.cactus.editage.pages.EnquirySuccessPage;
+import com.cactus.editage.pages.LoginPage;
+import com.cactus.editage.pages.ResetPasswordPage;
+import com.cactus.editage.pages.ReviewAndConfirmFormPage;
+import com.cactus.editage.pages.SelectServiceFormPage;
+import com.cactus.editage.pages.UploadManuscriptFormPage;
+
+import com.cactus.utils.ExcelUtil;
+
+
+
+public class LoginTest extends BaseTest {
+	
+	private FormActions formAction;
+	
+	//Login from Homepage Top Section
+	@Test
+	public void loginFromHomepage() {
+		driver.navigate().refresh();
+		formAction=new FormActions(driver, test, wait);
+		
+	}
+	
+	
+}

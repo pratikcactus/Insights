@@ -1,0 +1,65 @@
+package com.cactus.whiteboard.tests;
+
+import java.util.Map;
+
+import org.testng.annotations.Test;
+
+import com.cactus.crm.actions.CreateEnquiryActions;
+import com.cactus.crm.pages.ConfirmJobPage;
+import com.cactus.crm.pages.EnquiryAndJobViewPage;
+import com.cactus.utils.DataProviderClass;
+
+public class EnquiryTest extends BaseTest {
+	
+	@Test(alwaysRun = true, dataProvider = "newEnquiryData",dataProviderClass = DataProviderClass.class, groups = { "regression" })
+	public void createEnquiryNewUser(Map<String, String> testData) {
+		executor.logCase("Auto-18 :  Create enquiry from CRM.");
+		executor.logStep("Step: Open url:<a>" + testURL + "</a>");
+
+		CreateEnquiryActions addEnquiryAction = new CreateEnquiryActions(driver, test, wait);
+		EnquiryAndJobViewPage enquiryViewPage = addEnquiryAction.createAndSubmitEnquiry(testData);
+
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		addEnquiryAction.writeEnqData(testData);
+		
+		enquiryViewPage.clickOnSignOut();
+		System.out.println("FINISH");
+	}
+
+	@Test(alwaysRun = true, dataProvider = "existingEnquiryData",dataProviderClass = DataProviderClass.class, groups = { "regression" })
+	public void createEnquiryExistingUser(Map<String, String> testData) {
+		executor.logCase("Auto-27 :  Create Automation Script to create enquiry for an existing client from CRM.");
+		executor.logStep("Step: Open url:<a>" + testURL + "</a>");
+
+		testData.put("CreateNewUser", "no");
+
+		CreateEnquiryActions addEnquiryAction = new CreateEnquiryActions(driver, test, wait);
+		EnquiryAndJobViewPage enquiryViewPage = addEnquiryAction.createAndSubmitEnquiry(testData);
+
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		addEnquiryAction.writeEnqData(testData);
+
+		enquiryViewPage.clickOnSignOut();
+		System.out.println("FINISH");
+	}
+	
+	@Test(alwaysRun = true, dataProvider = "editPMAndCMData",dataProviderClass = DataProviderClass.class, groups = { "regression" })
+	public void createEnquiryEditPMAndCM(Map<String, String> testData) {
+		executor.logCase("Auto-18 :  Create enquiry from CRM.");
+		executor.logStep("Step: Open url:<a>" + testURL + "</a>");
+
+		CreateEnquiryActions addEnquiryAction = new CreateEnquiryActions(driver, test, wait);
+		EnquiryAndJobViewPage enquiryViewPage = addEnquiryAction.createAndSubmitEnquiry(testData);
+		ConfirmJobPage confirmJobPage = new ConfirmJobPage(driver, wait, test);
+		confirmJobPage.clickOnPMEditButtonAndGetPMID(testData.get("EditPM"),testData.get("PMId"));
+		confirmJobPage.clickOnCMEditButtonAndGetCMID(testData.get("EditCM"),testData.get("CMId"));
+		
+		testData.put("testEnv", configMap.get("TestEnvironment"));
+		addEnquiryAction.writeEnqData(testData);
+		
+		enquiryViewPage.clickOnSignOut();
+		System.out.println("FINISH");
+	}
+	
+
+}

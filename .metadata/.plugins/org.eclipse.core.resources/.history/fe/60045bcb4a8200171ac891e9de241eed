@@ -1,0 +1,54 @@
+package com.cactus.whiteboard.tests;
+
+import java.util.Map;
+
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import com.cactus.crm.actions.JobActions;
+import com.cactus.utils.ExcelUtil;
+import com.relevantcodes.extentreports.LogStatus;
+
+public class JobTest extends BaseTest {
+
+	@Test(dataProvider = "submitJobData", groups = { "regression" })
+	public void acceptAllocatedJobUser(Map<String, String> testData) {
+		testData.put("testURL", util.getTestURL("CRM", "ENG", configMap));
+		testData.put("crmLogoutURL", util.getTestURL("CRMLOGOUT", "ENG", configMap));
+		if (configMap.get("TestEnvironment").equalsIgnoreCase(testData.get("testEnv"))
+				&& (testData.get("status").contains("ACCEPTANCE")||testData.get("status").contains("PROGRESS"))) {
+			new JobActions(driver, test, wait).acceptJob(testData);
+			
+		} else {
+			executor.addStatus(LogStatus.WARNING, "This data is not for this test Env:"
+					+ configMap.get("TestEnvironment") + "Or Job status:" + testData.get("testEnv"));
+		}
+
+	}
+	
+	@Test(dataProvider = "submitJobData", groups = { "regression" })
+	public void sendToClientTest(Map<String, String> testData) {
+		testData.put("testURL", util.getTestURL("CRMJobView", "ENG", configMap));
+		String testURLCRMJobView=util.getTestURL("CRMJobView", "ENG", configMap);
+		testData.put("testURLCRMJobView", testURLCRMJobView);
+		if (configMap.get("TestEnvironment").equalsIgnoreCase(testData.get("testEnv"))
+				&&( testData.get("status").contains("COMPLETED")|| testData.get("status").contains("READY TO SEND"))) {
+			new JobActions(driver, test, wait).markJobComplete(testData);
+			if (testData.get("JobToBeDeliveredBy").equalsIgnoreCase("CM")) {
+				executor.navigateToURL(testData.get("testURL"));
+				new JobActions(driver, test, wait).sendToClientFromCM(testData);
+			}
+			
+		} else {
+			executor.addStatus(LogStatus.WARNING, "This data is not for this test Env:"
+					+ configMap.get("TestEnvironment") + " OR Job status:" + testData.get("testEnv"));
+		}
+
+	}
+
+	@DataProvider
+	public Object[][] submitJobData() {
+		return new ExcelUtil().getUserDataFromExcel("testData_FL.xlsx", "FLData");
+	}
+
+}

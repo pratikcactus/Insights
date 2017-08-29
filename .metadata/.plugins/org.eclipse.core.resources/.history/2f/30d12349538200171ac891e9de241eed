@@ -1,0 +1,92 @@
+package com.cactus.insights.pages;
+
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.cactus.executor.Executioner;
+import com.cactus.inits.Config;
+import com.cactus.utils.Util;
+import com.relevantcodes.extentreports.ExtentTest;
+
+public class LoginPage {// extends AbstractPage
+	private final WebDriver driver;
+	private WebDriverWait wait;
+	private Executioner executor;
+	private ExtentTest test;
+	private Util util;
+	
+	// Login Button
+	@FindBy(xpath = "//div[@class='anonymous-login anonymous-text']/a")
+	public WebElement logIn;
+
+	// Login Pop-Up
+	@FindBy(xpath = "//div[@id='mini-panel-register_popup']")
+	public WebElement popUpFrame;
+	
+	// Email ID in Login
+		@FindBy(id = "edit-name--2")
+		public WebElement EmailId;
+
+		// Password in Login
+		@FindBy(id = "edit-pass--2")
+		public WebElement password;
+
+		// Login Button
+		@FindBy(id = "edit-submit--3")
+		public WebElement loginButton;
+		
+		// Banner Pop-up
+		@FindBy(id = "at-cv-lightbox-message")
+		public WebElement bannerpopup;
+		
+		// Username block
+		@FindBy(xpath = "//div[@class='user-name']")
+		public WebElement username;
+
+		
+	public LoginPage(WebDriver driver, ExtentTest test, WebDriverWait wait) {
+		// super(driver, wait);
+		this.driver = driver;
+		this.wait = wait;
+		this.test = test;
+		executor = new Executioner(driver, test, wait);
+		util = Util.getInstance();
+		
+		PageFactory.initElements(driver, this);
+		executor.softWaitforVisibilityOfWebElement(logIn, "Wait until Check Login button is displayed");
+		executor.softWaitforVisibilityOfWebElement(logIn, "Wait until Check Login button is displayed");
+		
+
+		if (!driver.getTitle().trim().toLowerCase().contains(Config.ROW_TEST_SITE.toLowerCase())) {
+			throw new IllegalStateException("This is not  the  Staging  site Page");
+		}
+	}
+	
+	
+	public void login(){
+		executor.click(logIn, "Login button clicked");
+		executor.softWaitforVisibilityOfWebElement(popUpFrame, "Wait until Check Login button is displayed");
+		executor.type(EmailId, "authenticated-user-test@mailinator.com", "Entered username in login pop-up");
+			if(driver.getCurrentUrl().equals("https://ei.editage.com/insights")){
+				executor.type(password, "Ye@r2o17AwsTeSt_1", "Entered password  in login pop-up");
+			}
+			else{
+				executor.type(password, "authenticatedusertest", "Entered password in login pop-up");	
+			}
+		executor.click(loginButton, "Login Button clicked");
+		String username = executor.getText(By.xpath("//div[@class='user-name']"));
+		executor.assertEquals(username, "Hello", "Login is successful");	
+	}
+
+	
+	
+	
+
+
+
+}

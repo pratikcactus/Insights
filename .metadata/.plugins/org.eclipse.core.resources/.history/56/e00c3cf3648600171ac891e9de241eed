@@ -1,0 +1,26 @@
+package com.cactus.insights.tests;
+
+import java.util.List;
+import java.util.Map;
+
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import com.cactus.editage.tests.BaseTest;
+import com.cactus.eosapp.actions.FeedbackActions;
+import com.cactus.insights.actions.RegisterFormActions;
+import com.cactus.insights.pages.LoginPage;
+import com.cactus.utils.ExcelUtil;
+
+public class RegisterTest extends BaseTest {
+	
+	private RegisterFormActions registerAction; 
+
+	// Register from Homepage Top Section
+	@Test
+	public void loginFromHomepage() {
+		driver.navigate().refresh();
+		registerAction = new RegisterFormActions(driver, test, wait);
+		registerAction.registrationForm();
+	}
+}

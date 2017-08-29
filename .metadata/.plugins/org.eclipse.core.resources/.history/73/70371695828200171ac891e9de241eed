@@ -1,0 +1,173 @@
+package com.cactus.insights.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.cactus.executor.Executioner;
+import com.cactus.inits.Config;
+import com.cactus.utils.Util;
+import com.relevantcodes.extentreports.ExtentTest;
+
+public class LoginPage {// extends AbstractPage
+	private final WebDriver driver;
+	private WebDriverWait wait;
+	private Executioner executor;
+	private ExtentTest test;
+	private Util util;
+
+	// Login Button
+	@FindBy(xpath = "//div[@class='anonymous-login anonymous-text']/a")
+	public WebElement logIn;
+
+	// Login Pop-Up
+	@FindBy(xpath = "//div[@id='mini-panel-register_popup']")
+	public WebElement popUpFrame;
+
+	// Email ID in Login
+	@FindBy(id = "edit-name--2")
+	public WebElement EmailId;
+
+	// Password in Login
+	@FindBy(id = "edit-pass--2")
+	public WebElement password;
+
+	// Login Button
+	@FindBy(id = "edit-submit--3")
+	public WebElement loginButton;
+
+	// Save to Library Login Button
+	@FindBy(xpath = "//div[@class='overlay-close']//input[@id='edit-submit--2']")
+	public WebElement libraryLoginButton;
+
+	// Login Button
+	@FindBy(id = "edit-submit")
+	public WebElement loginButtonQA;
+
+	// Email ID QA in Login
+	@FindBy(id = "edit-name")
+	public WebElement EmailIdQA;
+
+	// Password QA in Login
+	@FindBy(id = "edit-pass")
+	public WebElement passwordQA;
+
+	// Email ID Save to Library in Login
+	@FindBy(xpath = "//div[@class='overlay-close']//input[@id='edit-name']")
+	public WebElement EmailIdLibrary;
+
+	// Password Save to Library in Login
+	@FindBy(xpath = "//div[@class='overlay-close']//input[@id='edit-pass']")
+	public WebElement passwordLibrary;
+
+	// Banner Pop-up
+	@FindBy(id = "at-cv-lightbox-message")
+	public WebElement bannerpopup;
+
+	// Banner Pop-up Save to Library
+	@FindBy(xpath = "//div[@class='panel-pane pane-block pane-insight-client-custom-user-login-custom']")
+	public WebElement bannerPopupLibrary;
+
+	// Username block
+	@FindBy(xpath = "//div[@class='user-name']")
+	public WebElement username;
+
+	// Username block
+	@FindBy(xpath = "//a[@class='at-cv-button at-cv-lightbox-yesno at-cm-no-button']")
+	public WebElement bannerButton;
+
+	// Community Menu block
+	@FindBy(xpath = "//li[@class='mn-megamenu-item level-1 mega mega-align-justify dropdown list-5']")
+	public WebElement communityMenu;
+
+	// Q&A menu link
+	@FindBy(xpath = "//li[@class='mn-megamenu-item level-2 mega level-2-item dropdown-submenu list-1 default-selection open']")
+	public WebElement qaMenuLink;
+
+	// Save to Read Later 1st article
+	@FindBy(xpath = "//div[@class='views-row views-row-1']//a[contains(@title, 'Save to read later')]")
+	public WebElement saveToReadLater;
+
+	// Iframe Login
+	@FindBy(id = "rufous-sandbox")
+	public WebElement iframeLogin;
+
+	public LoginPage(WebDriver driver, ExtentTest test, WebDriverWait wait) {
+		// super(driver, wait);
+		this.driver = driver;
+		this.wait = wait;
+		this.test = test;
+		executor = new Executioner(driver, test, wait);
+		util = Util.getInstance();
+
+		PageFactory.initElements(driver, this);
+		executor.softWaitforVisibilityOfWebElement(bannerpopup, "Wait until Check Login button is displayed");
+		if (executor.isElementDisplayed(bannerpopup, "banner pop-up") == true) {
+			executor.click(bannerButton, "No Thanks button for banner pop-up clicked");
+		} else {
+
+			executor.softWaitforVisibilityOfWebElement(logIn, "Wait until Check Login button is displayed");
+
+			if (!driver.getTitle().trim().toLowerCase().contains(Config.ROW_TEST_SITE.toLowerCase())) {
+				throw new IllegalStateException("This is not  the  Staging  site Page");
+			}
+		}
+	}
+
+	// HomePage Top Section Login
+	public void login() {
+		executor.click(logIn, "Login button clicked");
+		executor.softWaitforVisibilityOfWebElement(popUpFrame, "Wait until Check Login button is displayed");
+		executor.type(EmailId, "authenticated-user-test@mailinator.com", "Entered username in login pop-up");
+		if (driver.getCurrentUrl().contains("ei")) {
+			executor.type(password, "Ye@r2o17AwsTeSt_1", "Entered password  in login pop-up");
+		} else {
+			executor.type(password, "authenticatedusertest", "Entered password in login pop-up");
+		}
+		executor.click(loginButton, "Login Button clicked");
+		String username = executor.getText(By.xpath("//div[@class='user-name']"));
+		executor.assertEquals(username, "Hello, Dr. Authenticated", "Login is successful");
+	}
+
+	// Login from Q&A page
+	public void loginQA() {
+		String url = driver.getCurrentUrl() + "ask-a-question";
+		executor.navigateToURL(url);
+		executor.softWaitforElementToBeClickable(loginButtonQA, "Login Button on Q&A visible");
+		executor.type(EmailIdQA, "authenticated-user-test@mailinator.com", "Entered username in login pop-up");
+		if (driver.getCurrentUrl().contains("ei")) {
+			executor.type(passwordQA, "Ye@r2o17AwsTeSt_1", "Entered password  in login pop-up");
+		} else {
+			executor.type(passwordQA, "authenticatedusertest", "Entered password in login pop-up");
+		}
+		executor.click(loginButtonQA, "Login Button clicked");
+		executor.softWaitforInvisibilityOFWebElement(EmailIdQA, "Waiting for Email ID field to be invisible");
+		executor.waitForPageLoadJS();
+		String username = executor.getText(By.xpath("//div[@class='user-name']"));
+		executor.assertEquals(username, "Hello, Dr. Authenticated", "Login is successful");
+	}
+
+	public void clickSavetoLibrary() {
+		String url = driver.getCurrentUrl() + "categories/grammar-and-writing";
+		executor.navigateToURL(url);
+		executor.softWaitforElementToBeClickable(saveToReadLater, "Wait for Save to Library button");
+		executor.click(saveToReadLater, "Save to Library button clicked");
+		executor.softWaitforVisibilityOfWebElement(libraryLoginButton, "Wait until Check Login button is displayed");
+		executor.type(EmailIdLibrary, "authenticated-user-test@mailinator.com", "Entered username in login pop-up");
+		if (driver.getCurrentUrl().contains("ei")) {
+			executor.type(passwordLibrary, "Ye@r2o17AwsTeSt_1", "Entered password  in login pop-up");
+		} else {
+			executor.type(passwordLibrary, "authenticatedusertest", "Entered password in login pop-up");
+		}
+		executor.click(libraryLoginButton, "Login Button clicked");
+		executor.softWaitforInvisibilityOFWebElement(libraryLoginButton, "Waiting for Email ID field to be invisible");
+		driver.switchTo().defaultContent();
+		executor.waitForPageLoadJS();
+		String username = executor.getText(By.xpath("//div[@class='user-name']"));
+		executor.assertEquals(username, "Hello, Dr. Authenticated", "Login is successful");
+	}
+
+}

@@ -1,0 +1,62 @@
+package com.cactus.insights.actions;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.cactus.executor.Executioner;
+import com.cactus.insights.pages.LoginPage;
+import com.cactus.insights.pages.RegisterPage;
+import com.relevantcodes.extentreports.ExtentTest;
+
+public class RegisterFormActions {
+	private WebDriver driver;
+	private WebDriverWait wait;
+	private ExtentTest test;
+
+	private Executioner executor;
+	private RegisterPage registerPage;
+	private LoginPage loginPage;
+
+	public RegisterFormActions(WebDriver driver, ExtentTest test, WebDriverWait wait) {
+		this.driver = driver;
+		this.wait = wait;
+		this.test = test;
+		executor = new Executioner(driver, test, wait);
+		PageFactory.initElements(driver, this);
+
+	}
+
+	public void registrationFormHomepage() {
+		loginPage = new LoginPage(driver, test, wait);
+		loginPage.bannerWait();
+		registerPage = new RegisterPage(driver, test, wait);
+		registerPage.goToRegistration();
+		registerPage.userRegistration();
+	}
+
+	public void registrationFormQA() {
+		loginPage = new LoginPage(driver, test, wait);
+		loginPage.bannerWait();
+		loginPage.gotoQAPage();
+		registerPage = new RegisterPage(driver, test, wait);
+		registerPage.registerSectionClick();
+		registerPage.userRegistration();
+	}
+
+	public void registrationFormAccessDenied() {
+		loginPage = new LoginPage(driver, test, wait);
+		loginPage.bannerWait();
+		loginPage.gotoAccessDeniedPage();
+		registerPage = new RegisterPage(driver, test, wait);
+		registerPage.userRegistration();
+	}
+	
+	public void registerErrorHomepageCheck() {
+		loginPage = new LoginPage(driver, test, wait);
+		loginPage.bannerWait();
+		registerPage = new RegisterPage(driver, test, wait);
+		registerPage.registerErrorMessages();
+	}
+
+}

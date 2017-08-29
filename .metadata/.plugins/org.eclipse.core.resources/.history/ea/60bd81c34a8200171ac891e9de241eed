@@ -1,0 +1,50 @@
+package com.cactus.whiteboard.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.cactus.executor.Executioner;
+import com.cactus.inits.AbstractPage;
+import com.relevantcodes.extentreports.ExtentTest;
+import com.relevantcodes.extentreports.LogStatus;
+
+public class LoginPage extends AbstractPage {
+	private Executioner executor;
+	private ExtentTest test;
+	private
+
+	@FindBy(xpath = ".//*[@id='edit-name-1']") WebElement loginEmailID;
+	@FindBy(xpath = "//*[@id='edit-pass-1']")
+	WebElement loginPassowrd;
+	@FindBy(xpath = "//*[@id='edit-submit-1']")
+	WebElement loginButton;
+
+	By buttonLoader = By.className("loading-btn");
+
+	public LoginPage(WebDriver driver, WebDriverWait wait, ExtentTest test) {
+		super(driver, wait, test);
+		this.test = test;
+		this.executor = new Executioner(driver, test, wait);
+	}
+
+	public Dashboard login(String email, String password) {
+		executor.waitForPageLoadJS();
+		executor.type(loginEmailID, email, "Enter Email ID:" + email);
+		executor.type(loginPassowrd, password, "Enter Password:" + password);
+
+		executor.clickJS(loginButton, "Login");
+		executor.findAndSwitchToAvailableWindow();
+		
+		executor.softWaitCondition(ExpectedConditions.invisibilityOfElementLocated(buttonLoader),
+				"Invisibility of Loader on button");
+		executor.waitForPageLoadJS();
+		executor.addStatus(LogStatus.PASS, "Login");
+		
+		return new Dashboard(driver, wait, test);
+	}
+
+}

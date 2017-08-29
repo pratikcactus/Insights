@@ -1,0 +1,20 @@
+package com.cactus.insights.tests;
+
+import org.testng.annotations.Test;
+
+import com.cactus.insights.tests.BaseTest;
+import com.cactus.insights.actions.RegisterFormActions;
+import com.cactus.insights.pages.LoginPage;
+
+public class RegisterTest extends BaseTest {
+	
+	private RegisterFormActions registerAction; 
+
+	// Register from Homepage Top Section
+	@Test
+	public void registerFromHomepage() {
+		loginPage = new LoginPage(driver, test, wait);
+		registerAction = new RegisterFormActions(driver, test, wait);
+		registerAction.registrationForm();
+	}
+}
