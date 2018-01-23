@@ -1,5 +1,12 @@
 package com.cactus.insights.tests;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
+import java.util.concurrent.TimeUnit;
+
 import org.testng.annotations.BeforeMethod;
 
 import com.cactus.inits.Config;
@@ -11,9 +18,9 @@ public class BaseTest extends InitTest {
 	//Row Test Client Site
 	@BeforeMethod
 	public void setupEditage(){
-		testURL = Config.insightURL;			
+		testURL = util.getTestURL(configMap);			
 		executor.navigateToURL(testURL);
-
+		
 		//configMap.put("market", market);
 		//partnerMap = dbUtil.getPartnerMap(configMap.get("TestEnvironment"));
 		//serviceMap = dbUtil.getServiceMap(configMap.get("TestEnvironment"));

@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -15,9 +18,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import com.cactus.inits.Config;
 
@@ -61,6 +66,7 @@ public class Util {
 		}
 		return null;
 	}
+	
 
 	public synchronized String takeScreenshot(WebDriver driver) {
 		try {
@@ -198,11 +204,56 @@ public class Util {
 
 		return map;
 	}
-
-	public String getTestURL() {
-		
-		return "https://ei.editage.com/insights";
+	
+	public String getTestURL(Map<String, String> config) {
+		String env = config.get("ENVIRONMENT");
+		String market = config.get("Market");
+		String URL="";
+		if(env.equalsIgnoreCase("Staging") && market.equalsIgnoreCase("ROW")){
+			URL = "https://" + "editageStaging" + ":" + "Editage@!nsights" + "@" + "ei.editage.com/insights/";
+		}else if(env.equalsIgnoreCase("Staging") && market.equalsIgnoreCase("CN")){
+			URL = "http://ei.editage.cn/insights";
+		}else if(env.equalsIgnoreCase("Staging") && market.equalsIgnoreCase("JP")){
+			URL = "http://ei.editage.jp/insights";
+		}else if(env.equalsIgnoreCase("Staging") && market.equalsIgnoreCase("KR")){
+			URL = "http://ei.editage.co.kr/insights";
+		}else if(env.equalsIgnoreCase("Live") && market.equalsIgnoreCase("ROW")){
+			URL = "https://www.editage.com/insights";
+		}else if(env.equalsIgnoreCase("Live") && market.equalsIgnoreCase("CN")){
+			URL = "http://www.editage.cn/insights";
+		}else if(env.equalsIgnoreCase("Live") && market.equalsIgnoreCase("JP")){
+			URL = "http://www.editage.jp/insights";
+		}else if(env.equalsIgnoreCase("Live") && market.equalsIgnoreCase("KR")){
+			URL = "http://www.editage.co.kr/insights";
+		}
+		return URL;
+	}
+	
+	public String isLinkBroken(URL url) throws Exception {
+		String response = "";
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		try {
+			connection.connect();
+			response = connection.getResponseMessage();
+			connection.disconnect();
+			return response;
+		} catch (Exception exp) {
+			return exp.getMessage();
+		}
 
 	}
+	
+	public boolean imageChecker(WebElement image, WebDriver driver){
+		 Boolean ImagePresent = (Boolean) ((JavascriptExecutor)driver).executeScript("return arguments[0].complete && typeof arguments[0].naturalWidth != \"undefined\" && arguments[0].naturalWidth > 0", image);
+		 return ImagePresent;
+	
+	}
+	
+	public boolean imagesListChecks(List<WebElement> images, WebDriver driver){
+		 Boolean ImagePresent = (Boolean) ((JavascriptExecutor)driver).executeScript("return arguments[0].complete && typeof arguments[0].naturalWidth != \"undefined\" && arguments[0].naturalWidth > 0", images);
+		 return ImagePresent;
+	
+	}
+
 
 }

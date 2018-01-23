@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Suite">
+  <test name="Test">
+    <classes>
+      <!--<class name="com.cactus.insights.tests.HeaderTest"/> -->
+     <!-- <class name="com.cactus.insights.tests.FooterTest"/> -->
+      <!-- <class name="com.cactus.executor.Executioner"/> -->
+     <!-- <class name="com.cactus.insights.tests.HomePageTest"/> -->
+      <!--<class name="com.cactus.insights.tests.MegaNavTest"/> -->
+     <!--  <class name="com.cactus.inits.InitTest"/> -->
+     <!-- <class name="com.cactus.insights.tests.DetailedPageTest"/> -->
+     <!--  <class name="com.cactus.insights.tests.QaTest"/> -->
+      <class name="com.cactus.insights.tests.RegisterTest"/>
+      <!--<class name="com.cactus.insights.tests.YourLibraryTest"/> -->
+      <class name="com.cactus.insights.tests.LoginTest"/>
+      <!--<class name="com.cactus.insights.tests.ListingPageTest"/> -->
+      <!--<class name="com.cactus.insights.tests.AboutUsTest"/> -->
+     <!-- <class name="com.cactus.insights.tests.SearchTest"/> -->
+    </classes>
+  </test> <!-- Test -->
+</suite> <!-- Suite -->

@@ -25,13 +25,50 @@ public class SearchPageActions {
 		executor = new Executioner(driver, test, wait);
 		PageFactory.initElements(driver, this);
 	}
+
+	public void searchValidData(String input) {
+		searchPage = new SearchPage(driver, test, wait);
+		searchPage.validSearchData(input);
+	}
 	
-	public void searchValidData(){
+	public void searchValidDataList(String input) {
+		searchPage = new SearchPage(driver, test, wait);
+		searchPage.validSearchDataList(input);
+	}
+
+	public void searchFilterFormat() {
 		loginPage = new LoginPage(driver, test, wait);
 		loginPage.bannerWait();
 		searchPage = new SearchPage(driver, test, wait);
-		searchPage.searchIconClick("question");
-		searchPage.validSearchData();		
+		searchPage.searchFiltersFormat();
+	}
+
+	public void searchFilterDate() {
+		loginPage = new LoginPage(driver, test, wait);
+		loginPage.bannerWait();
+		searchPage = new SearchPage(driver, test, wait);
+		searchPage.searchFiltersDate();
+	}
+
+	public void searchDetailedPage() {
+		loginPage = new LoginPage(driver, test, wait);
+		loginPage.bannerWait();
+		searchPage = new SearchPage(driver, test, wait);
+		searchPage.detailPageSearch();
 	}
 	
+	public void askQuestionPage() {
+		loginPage = new LoginPage(driver, test, wait);
+		loginPage.bannerWait();
+		searchPage = new SearchPage(driver, test, wait);
+		searchPage.askQuestion();
+	}
+	
+	public void noSearchpage() {
+		loginPage = new LoginPage(driver, test, wait);
+		loginPage.bannerWait();
+		searchPage = new SearchPage(driver, test, wait);
+		searchPage.noSearch();
+	}
+
 }

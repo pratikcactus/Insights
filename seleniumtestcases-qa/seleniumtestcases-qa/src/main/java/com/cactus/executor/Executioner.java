@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -114,7 +115,7 @@ public class Executioner {
 		return ieBrowserFlag;
 	}
 
-	private void reportsLog(String data, LogStatus status, String screenshot) {
+	public void reportsLog(String data, LogStatus status, String screenshot) {
 		if (printConsoleLogFlag == true)
 			printConsoleStep(data, status);
 
@@ -185,7 +186,7 @@ public class Executioner {
 		try {
 			driver.get(url);
 			reportsLog(data, LogStatus.PASS, passScreenShot());
-			driver.manage().window().maximize();
+			//driver.manage().window().maximize();
 		} catch (Exception e) {
 			data = "Unable To navigate to URL: " + url;
 			reportsLog(data, LogStatus.FAIL, screenShot());
@@ -260,6 +261,7 @@ public class Executioner {
 		reportsLog(data, LogStatus.INFO, "");
 	}
 
+	
 	public void clickJS(By byValue, String data) {
 		WebElement e = driver.findElement(byValue);
 		JavascriptExecutor executor = (JavascriptExecutor) driver;
@@ -307,6 +309,8 @@ public class Executioner {
 		}
 
 	}
+	
+	
 
 	public Executioner softWaitforInvisibilityOFWebElement(List<WebElement> liWEs, String data) {
 		data = "Waiting for condition: " + data;
@@ -739,6 +743,12 @@ public class Executioner {
 		Actions action = new Actions(driver);
 		action.moveToElement(element).build().perform();
 	}
+	
+	public void mouseHover(By identifier) {
+		WebElement element = driver.findElement(identifier);
+		Actions action = new Actions(driver);
+		action.moveToElement(element).build().perform();
+	}
 
 	public void mouseHoverJS(WebElement element) {
 		String strJavaScript = "var element = arguments[0];"
@@ -756,10 +766,29 @@ public class Executioner {
 		action.moveToElement(element).perform();
 	}
 
+	public boolean clickAndReturnValue(WebElement e, String data) {
+		String pageName = getCallerName();
+		try {
+			if (ieBrowserFlag == true) {
+				clickJS(e, data);
+			} else
+				e.click();
+			reportsLog(data, LogStatus.PASS, passScreenShot(pageName));
+			return true;
+		} catch (Exception exception) {
+			reportsLog(data, LogStatus.WARNING, screenShot(pageName));
+			return false;
+		}
+	}
+	
 	public void moveToElement(By identifier) {
 		WebElement element = driver.findElement(identifier);
 		Actions action = new Actions(driver);
 		action.moveToElement(element).perform();
+	}
+	
+	public void scrollIntoView(WebElement element) {
+		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
 	}
 
 	public boolean isElementDisplayed(WebElement element, String data) {
@@ -994,9 +1023,9 @@ public class Executioner {
 
 	}
 
-	public void scrollDown() {
+	public void scrollDown(int value) {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("window.scrollBy(0,500)", "");
+		js.executeScript("window.scrollBy(0,"+value+")", "");
 	}
 
 	public void scrollUp() {
@@ -1074,6 +1103,11 @@ public class Executioner {
 		js.executeScript("arguments[0].setAttribute('value', '" + value + "')", el);
 
 	}
+	
+	public void scrollToElement(WebElement el) throws InterruptedException{
+		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", el);
+		Thread.sleep(500); 
+	}
 
 	public void setAttributeValueJS(By byValue, String value) {
 		WebElement el = driver.findElement(byValue);
@@ -1088,6 +1122,14 @@ public class Executioner {
 		} catch (InterruptedException interruptedException) {
 		}
 	}
+	
+	public void pause(Integer milliseconds){
+	    try {
+	        TimeUnit.MILLISECONDS.sleep(milliseconds);
+	    } catch (InterruptedException e) {
+	        //e.printStackTrace();
+	    }
+	}
 
 	public boolean isWebElementVisible(WebElement w) {
 		Dimension weD = w.getSize();
@@ -1101,6 +1143,35 @@ public class Executioner {
 
 		return x2 <= x && y2 <= y;
 	}
+	
+	/*@description: right click Method to open in new tab
+	 * 
+	 **/
+	public void rightClick(WebElement element,String data) {
+		try {
+			Actions action = new Actions(driver).contextClick(element);
+			action.build().perform();
+
+			System.out.println("Sucessfully Right clicked on the element");
+		} catch (Exception e) {
+			System.out.println(e.getStackTrace());
+		 }
+		}
+	/*@description: Method to focus on new tab and back again
+	 * 
+	 **/
+	public void switchWindows(WebElement element){
+		String oldTab = driver.getWindowHandle();
+		JavascriptExecutor jse = ((JavascriptExecutor) driver);
+		jse.executeScript("arguments[0].scrollIntoView(true);", element);
+		String selectLinkOpeninNewTab = Keys.chord(Keys.CONTROL, Keys.RETURN);
+		element.sendKeys(selectLinkOpeninNewTab);
+		ArrayList<String> newTab = new ArrayList<String>(driver.getWindowHandles());
+		newTab.remove(oldTab);
+		driver.switchTo().window((newTab).get(0));
+		
+	}
+		
 	
 	public String getText(By by){
 		return driver.findElement(by).getText();	

@@ -2,6 +2,7 @@ package com.cactus.inits;
 
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -20,14 +21,15 @@ public class WebDriverInstance {
 	}
 
 	public WebDriver setDriver(String targetBrowser, String host, String port, String useProxy, String os) {
-		
+
 		DesiredCapabilities capabilities = new DesiredCapabilities();
 		setSystemPath(targetBrowser, os);
 		if (targetBrowser.toLowerCase().contains("chrome")) {
 			capabilities = getChromeCapabilities(capabilities);
 		} else if (targetBrowser.toLowerCase().contains("firefox")) {
 			capabilities = getFirefoxCapabilities(capabilities);
-		} else if (targetBrowser.toLowerCase().contains("htmlunit")||targetBrowser.toLowerCase().contains("headless")) {
+		} else if (targetBrowser.toLowerCase().contains("htmlunit")
+				|| targetBrowser.toLowerCase().contains("headless")) {
 			capabilities = getHtmlUnitCapabilities(capabilities);
 		} else if (targetBrowser.toLowerCase().contains("ie")) {
 			capabilities = getIECapabilities(capabilities);
@@ -46,14 +48,18 @@ public class WebDriverInstance {
 		}
 
 		WebDriver driver = executor.openBrowser(host, port, capabilities);
-		
+
 		System.out.println("Step : info : Driver settings done");
 		return driver;
 	}
 
 	public DesiredCapabilities getChromeCapabilities(DesiredCapabilities capabilities) {
 		capabilities = DesiredCapabilities.chrome();
-
+		// capabilities.setCapability("chrome.switches",
+		// Arrays.asList("--start-maximized"));
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--start-maximized");
+		capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 		capabilities.setBrowserName("chrome");
 		return capabilities;
 	}
@@ -76,26 +82,29 @@ public class WebDriverInstance {
 		capabilities = DesiredCapabilities.internetExplorer();
 
 		capabilities.setBrowserName("internet explorer");
-		//capabilities.setCapability("requireWindowFocus", true);
-		//capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
-		//capabilities.setCapability("nativeEvents", false);
-		//capabilities.setJavascriptEnabled(true);
+		// capabilities.setCapability("requireWindowFocus", true);
+		// capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS,
+		// true);
+		// capabilities.setCapability("nativeEvents", false);
+		// capabilities.setJavascriptEnabled(true);
 		capabilities.setCapability("ignoreZoomSetting", true);
 		capabilities.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
-		//capabilities.setCapability(InternetExplorerDriver.FORCE_CREATE_PROCESS, true); 
-		//capabilities.setCapability(InternetExplorerDriver.IE_SWITCHES, "-private");
-		//capabilities.setCapability("unexpectedAlertBehaviour", "accept");
+		// capabilities.setCapability(InternetExplorerDriver.FORCE_CREATE_PROCESS,
+		// true);
+		// capabilities.setCapability(InternetExplorerDriver.IE_SWITCHES,
+		// "-private");
+		// capabilities.setCapability("unexpectedAlertBehaviour", "accept");
 		capabilities.setCapability("ignoreProtectedModeSettings", true);
-		//capabilities.setCapability("disable-popup-blocking", true);
+		// capabilities.setCapability("disable-popup-blocking", true);
 		capabilities.setCapability("enablePersistentHover", false);
-		
+
 		return capabilities;
 	}
 
 	public DesiredCapabilities getHtmlUnitCapabilities(DesiredCapabilities capabilities) {
 		capabilities = DesiredCapabilities.htmlUnit();
 		capabilities.setJavascriptEnabled(true);
-		//capabilities.setVersion("firefox");
+		// capabilities.setVersion("firefox");
 		capabilities.setBrowserName("htmlunit");
 		return capabilities;
 
@@ -115,7 +124,6 @@ public class WebDriverInstance {
 		if (os.equalsIgnoreCase("windows")) {
 			extension = ".exe";
 		}
-	
 
 		if (browser.contains("firefox")) {
 			System.setProperty("webdriver.gecko.driver", rootPath + "geckodriver" + extension);
